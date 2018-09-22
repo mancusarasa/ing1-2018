@@ -21,17 +21,20 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 20:52:41'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:50:10'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
 	| addCustomer |
 	
-	addCustomer:= [ | customerBook | customerBook := CustomerBook  new.
-	customerBook addCustomerNamed: 'John Lennon'.].
+	addCustomer:= [
+		| customerBook |
+		customerBook := CustomerBook  new.
+		customerBook addCustomerNamed: 'John Lennon'.
+	].
 	self assertClosure: addCustomer TakesLessThan: 50.
 	! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 20:55:03'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 15:28:04'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
 	| customerBook paulMcCartney removeCustomer |
@@ -39,20 +42,20 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	customerBook := CustomerBook  new.
 	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
-	  
-	removeCustomer := [customerBook removeCustomerNamed: paulMcCartney.].
+	removeCustomer := [
+		customerBook removeCustomerNamed: paulMcCartney.
+	].
 	self assertClosure: removeCustomer TakesLessThan: 100. 
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 21:17:54'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 15:27:46'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook tryClosure catchClosure|
 			
 	customerBook := CustomerBook new.
-
 	tryClosure := [
 		customerBook addCustomerNamed: ''.
 		self fail
@@ -125,7 +128,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 21:36:29'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:51:07'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| customerBook johnLennon tryClosure catchClosure |
@@ -133,23 +136,20 @@ test07CanNotSuspendAnInvalidCustomer
 	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-	
 	tryClosure:= [ 
 		customerBook suspendCustomerNamed: 'Paul McCartney'.
 		self fail 
 	].
-	
 	catchClosure:=[ :anError | 
 		self assert: customerBook numberOfCustomers = 1.
 		self assert: (customerBook includesCustomerNamed: johnLennon)
 	].
-	
 	self try: tryClosure  on: CantSuspend catch: catchClosure. 
 		
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 21:39:18'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:51:17'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| customerBook johnLennon tryClosure catchClosure |
@@ -158,12 +158,10 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
-	
 	tryClosure:= [ 
 		customerBook suspendCustomerNamed: johnLennon.
 		self fail 
 	].
-	 
 	catchClosure:= [
 		:anError | 
 		self assert: customerBook numberOfCustomers = 1.
