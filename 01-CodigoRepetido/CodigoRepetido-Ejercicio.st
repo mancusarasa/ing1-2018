@@ -16,46 +16,36 @@ Error subclass: #NotFound
 
 !classDefinition: #CustomerBookTest category: #'CodigoRepetido-Ejercicio'!
 TestCase subclass: #CustomerBookTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'customerBook'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:50:10'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:02:00'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
 	| addCustomer |
 	
-	addCustomer:= [
-		| customerBook |
-		customerBook := CustomerBook  new.
-		customerBook addCustomerNamed: 'John Lennon'.
-	].
+	addCustomer:= [customerBook addCustomerNamed: 'John Lennon'.].
 	self assertClosure: addCustomer TakesLessThan: 50.
 	! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 15:28:04'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:21:08'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| customerBook paulMcCartney removeCustomer |
-	
-	customerBook := CustomerBook  new.
+	| paulMcCartney removeCustomer |
+
 	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
-	removeCustomer := [
-		customerBook removeCustomerNamed: paulMcCartney.
-	].
-	self assertClosure: removeCustomer TakesLessThan: 100. 
+	  
+	removeCustomer := [customerBook removeCustomerNamed: paulMcCartney.].
+	self assertClosure: removeCustomer TakesLessThan: 100. ! !
 
-	
-! !
-
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 15:27:46'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:10:37'!
 test03CanNotAddACustomerWithEmptyName 
 
-	| customerBook tryClosure catchClosure|
+	| tryClosure catchClosure|
 			
-	customerBook := CustomerBook new.
 	tryClosure := [
 		customerBook addCustomerNamed: ''.
 		self fail
@@ -65,14 +55,14 @@ test03CanNotAddACustomerWithEmptyName
 		self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 		self assert: customerBook isEmpty
 	].
+
 	self try: tryClosure on: Error catch: catchClosure. ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/20/2018 21:12:31'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 15:58:47'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	| customerBook johnLennon tryClosure catchClosure |
-			
-	customerBook := CustomerBook new.
+	| johnLennon tryClosure catchClosure |
+		
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
@@ -87,60 +77,56 @@ test04CanNotRemoveAnInvalidCustomer
 	].
 	self try: tryClosure on:  NotFound catch: catchClosure.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'HAW 9/20/2018 09:21:59'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:02:56'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
-	| customerBook paulMcCartney|
+	| paulMcCartney|
 	
-	customerBook := CustomerBook  new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 1 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 1 equals: customerBook numberOfCustomers.
+	self assertActive: 0 suspended: 1 total: 1 in: customerBook.
+	
 	self assert: (customerBook includesCustomerNamed: paulMcCartney).
 	
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'HAW 9/20/2018 09:23:02'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 15:59:02'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
-	| customerBook paulMcCartney|
-	
-	customerBook := CustomerBook  new.
+	| paulMcCartney|
+
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 0 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 0 equals: customerBook numberOfCustomers.
+	self assertActive: 0 suspended: 0 total: 0 in: customerBook.
+	
 	self deny: (customerBook includesCustomerNamed: paulMcCartney).
 
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:51:07'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:10:27'!
 test07CanNotSuspendAnInvalidCustomer
 	
-	| customerBook johnLennon tryClosure catchClosure |
+	| johnLennon tryClosure catchClosure |
 			
-	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	tryClosure:= [ 
 		customerBook suspendCustomerNamed: 'Paul McCartney'.
 		self fail 
 	].
-	catchClosure:=[ :anError | 
+	catchClosure:=[ 
+		:anError | 
 		self assert: customerBook numberOfCustomers = 1.
 		self assert: (customerBook includesCustomerNamed: johnLennon)
 	].
@@ -149,12 +135,11 @@ test07CanNotSuspendAnInvalidCustomer
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/22/2018 14:51:17'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:11:02'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
-	| customerBook johnLennon tryClosure catchClosure |
-			
-	customerBook := CustomerBook new.
+	| johnLennon tryClosure catchClosure |
+	
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
@@ -172,6 +157,22 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 		
 ! !
 
+
+!CustomerBookTest methodsFor: 'setUp' stamp: 'd 9/22/2018 15:57:51'!
+setUp
+	customerBook := CustomerBook  new.! !
+
+
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/22/2018 15:36:18'!
+assertActive: activeCustomers Suspended: suspendedCustomers Total: totalCustomers
+	! !
+
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/22/2018 15:37:24'!
+assertActive: activeCustomers suspended: suspendedCustomers total: totalCustomers in: aCustomerBook
+	
+	self assert: activeCustomers equals: aCustomerBook numberOfActiveCustomers.
+	self assert: suspendedCustomers equals: aCustomerBook numberOfSuspendedCustomers.
+	self assert: totalCustomers equals: aCustomerBook numberOfCustomers.! !
 
 !CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/20/2018 20:49:35'!
 assertClosure: aClosure TakesLessThan: milliSeconds
