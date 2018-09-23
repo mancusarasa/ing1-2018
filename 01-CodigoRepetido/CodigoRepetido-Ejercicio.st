@@ -41,43 +41,32 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	removeCustomer := [customerBook removeCustomerNamed: paulMcCartney.].
 	self assertClosure: removeCustomer TakesLessThan: 100. ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:10:37'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 10:52:41'!
 test03CanNotAddACustomerWithEmptyName 
 
-	| tryClosure catchClosure|
-			
-	tryClosure := [
-		customerBook addCustomerNamed: ''.
-		self fail
-	].
-	catchClosure :=  [
+	| assertClosure |
+
+	assertClosure :=  [
 		 :anError | 
 		self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 		self assert: customerBook isEmpty
 	].
 
-	self try: tryClosure on: Error catch: catchClosure. ! !
+	self fail:  [customerBook addCustomerNamed: ''.] onError: Error assert: assertClosure.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 15:58:47'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:15:30'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	| johnLennon tryClosure catchClosure |
+	| johnLennon |
 		
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-	
-	tryClosure := [ 
-		customerBook removeCustomerNamed: 'Paul McCartney'.
-		self fail
-	]. 
-	catchClosure :=  [ 
-		:anError | 
-		self assert: customerBook numberOfCustomers = 1.
-		self assert: (customerBook includesCustomerNamed: johnLennon)
-	].
-	self try: tryClosure on:  NotFound catch: catchClosure.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:02:56'!
+	self 	fail: [customerBook removeCustomerNamed: 'Paul McCartney'.]  
+			onError: NotFound 
+			assert:  [:anError | self assertOnlyOneCustomerNamed: johnLennon.].! !
+
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:19:39'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| paulMcCartney|
@@ -87,7 +76,7 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	
-	self assertActive: 0 suspended: 1 total: 1 in: customerBook.
+	self assertAmountOfActive: 0 suspended: 1 total: 1.
 	
 	self assert: (customerBook includesCustomerNamed: paulMcCartney).
 	
@@ -95,7 +84,7 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 15:59:02'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:19:44'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| paulMcCartney|
@@ -106,7 +95,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self assertActive: 0 suspended: 0 total: 0 in: customerBook.
+	self assertAmountOfActive: 0 suspended: 0 total: 0.
 	
 	self deny: (customerBook includesCustomerNamed: paulMcCartney).
 
@@ -114,46 +103,32 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:10:27'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:15:53'!
 test07CanNotSuspendAnInvalidCustomer
 	
-	| johnLennon tryClosure catchClosure |
+	| johnLennon |
 			
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-	tryClosure:= [ 
-		customerBook suspendCustomerNamed: 'Paul McCartney'.
-		self fail 
-	].
-	catchClosure:=[ 
-		:anError | 
-		self assert: customerBook numberOfCustomers = 1.
-		self assert: (customerBook includesCustomerNamed: johnLennon)
-	].
-	self try: tryClosure  on: CantSuspend catch: catchClosure. 
-		
-	
-! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:11:02'!
+	self 	fail: [customerBook suspendCustomerNamed: 'Paul McCartney'.] 
+			onError: CantSuspend 
+			assert: [ :anError | self assertOnlyOneCustomerNamed: johnLennon.].! !
+
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:16:27'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
-	| johnLennon tryClosure catchClosure |
+	| johnLennon |
 	
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
-	tryClosure:= [ 
-		customerBook suspendCustomerNamed: johnLennon.
-		self fail 
-	].
-	catchClosure:= [
-		:anError | 
-		self assert: customerBook numberOfCustomers = 1.
-		self assert: (customerBook includesCustomerNamed: johnLennon) 
-	].
-	self try: tryClosure on: CantSuspend  catch: catchClosure. 
-	
+
+	self 	fail: [customerBook suspendCustomerNamed: johnLennon.] 
+			onError: CantSuspend 
+			assert: [ :anError | self assertOnlyOneCustomerNamed: johnLennon.].
+		
+		
 		
 ! !
 
@@ -163,16 +138,12 @@ setUp
 	customerBook := CustomerBook  new.! !
 
 
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/22/2018 15:36:18'!
-assertActive: activeCustomers Suspended: suspendedCustomers Total: totalCustomers
-	! !
-
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/22/2018 15:37:24'!
-assertActive: activeCustomers suspended: suspendedCustomers total: totalCustomers in: aCustomerBook
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 11:19:23'!
+assertAmountOfActive: activeCustomers suspended: suspendedCustomers total: totalCustomers
 	
-	self assert: activeCustomers equals: aCustomerBook numberOfActiveCustomers.
-	self assert: suspendedCustomers equals: aCustomerBook numberOfSuspendedCustomers.
-	self assert: totalCustomers equals: aCustomerBook numberOfCustomers.! !
+	self assert: activeCustomers equals: customerBook numberOfActiveCustomers.
+	self assert: suspendedCustomers equals: customerBook numberOfSuspendedCustomers.
+	self assert: totalCustomers equals: customerBook numberOfCustomers.! !
 
 !CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/20/2018 20:49:35'!
 assertClosure: aClosure TakesLessThan: milliSeconds
@@ -183,10 +154,15 @@ assertClosure: aClosure TakesLessThan: milliSeconds
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (milliSeconds * millisecond)! !
 
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/20/2018 21:14:26'!
-try: tryClosure on: anError catch: catchClosure
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 11:07:55'!
+assertOnlyOneCustomerNamed: aName.
+	self assert: customerBook numberOfCustomers = 1.
+	self assert: (customerBook includesCustomerNamed: aName).! !
+
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 10:50:37'!
+fail: failClosure onError: anError assert: assertClosure
 	
-	tryClosure on: anError do: [ :error | catchClosure value: error].! !
+	[failClosure value. self fail. ] on: anError do: [ :error | assertClosure value: error].! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
