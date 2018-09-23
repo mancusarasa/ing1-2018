@@ -39,34 +39,43 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	self 	assertClosure:  [customerBook removeCustomerNamed: paulMcCartney.]
 			TakesLessThan: 100. ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 12:54:35'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 14:55:02'!
 test03CanNotAddACustomerWithEmptyName 
 
-	| assertClosure |
+	| addCustomerWithEmptyName checkThatCustomerBookIsStillEmpty |
 
-	assertClosure :=  [
+	addCustomerWithEmptyName := [
+		customerBook addCustomerNamed: ''.
+	].
+	checkThatCustomerBookIsStillEmpty :=  [
 		 :anError | 
 		self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 		self assert: customerBook isEmpty
 	].
-	self performClosure: [customerBook addCustomerNamed: ''.] expectingError: Error andPerformPostErrorAssertions: assertClosure.! !
+	self performClosure: addCustomerWithEmptyName expectingError: Error andPerformPostErrorAssertions: checkThatCustomerBookIsStillEmpty.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 12:55:53'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 14:57:30'!
 test04CanNotRemoveAnInvalidCustomer
 	
-	| johnLennon |
+	| johnLennon removePaulFromCustomer checkJohnIsStillTheOnlyCustomer |
 		
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-
-	self 	performClosure: [customerBook removeCustomerNamed: 'Paul McCartney'.]  
+	removePaulFromCustomer:= [
+		customerBook removeCustomerNamed: 'Paul McCartney'.
+	].
+	checkJohnIsStillTheOnlyCustomer := [
+		:anError |
+		self assertThereIsOnlyOneCustomerNamed: johnLennon.
+	].
+	self 	performClosure: removePaulFromCustomer  
 			expectingError: NotFound 
-			andPerformPostErrorAssertions:  [:anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].! !
+			andPerformPostErrorAssertions: checkJohnIsStillTheOnlyCustomer.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:19:39'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 14:57:57'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
-	| paulMcCartney|
+	| paulMcCartney |
 	
 	paulMcCartney := 'Paul McCartney'.
 	
@@ -100,30 +109,43 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 12:56:46'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 14:59:40'!
 test07CanNotSuspendAnInvalidCustomer
 	
-	| johnLennon |
+	| johnLennon suspendPaul checkJohnIsStillTheOnlyCustomer|
 			
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-
-	self 	performClosure: [customerBook suspendCustomerNamed: 'Paul McCartney'.] 
+	suspendPaul := [
+		customerBook suspendCustomerNamed: 'Paul McCartney'.
+	].
+	checkJohnIsStillTheOnlyCustomer:= [
+		 :anError |
+		self assertThereIsOnlyOneCustomerNamed: johnLennon.
+	].
+	self 	performClosure: suspendPaul 
 			expectingError: CantSuspend 
-			andPerformPostErrorAssertions: [ :anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].! !
+			andPerformPostErrorAssertions: checkJohnIsStillTheOnlyCustomer.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 12:57:51'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'ps 9/23/2018 15:01:56'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
-	| johnLennon |
+	| johnLennon suspendJohn checkJohnIsStillTheOnlyCustomer |
 	
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	customerBook suspendCustomerNamed: johnLennon.
+	suspendJohn := [
+		customerBook suspendCustomerNamed: johnLennon.
+	].
+	checkJohnIsStillTheOnlyCustomer:= [
+		 :anError |
+		self assertThereIsOnlyOneCustomerNamed: johnLennon.
+	].
 
-	self 	performClosure: [customerBook suspendCustomerNamed: johnLennon.] 
+	self 	performClosure: suspendJohn 
 			expectingError:CantSuspend 
-			andPerformPostErrorAssertions: [ :anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].
+			andPerformPostErrorAssertions: checkJohnIsStillTheOnlyCustomer.
 		
 		
 		
