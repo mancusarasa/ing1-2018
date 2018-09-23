@@ -21,25 +21,23 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:02:00'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:30:50'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 
-	| addCustomer |
-	
-	addCustomer:= [customerBook addCustomerNamed: 'John Lennon'.].
-	self assertClosure: addCustomer TakesLessThan: 50.
+	self 	assertClosure: [customerBook addCustomerNamed: 'John Lennon'.] 
+			TakesLessThan: 50.
 	! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/22/2018 16:21:08'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:29:01'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 
-	| paulMcCartney removeCustomer |
+	| paulMcCartney |
 
 	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
-	  
-	removeCustomer := [customerBook removeCustomerNamed: paulMcCartney.].
-	self assertClosure: removeCustomer TakesLessThan: 100. ! !
+
+	self 	assertClosure:  [customerBook removeCustomerNamed: paulMcCartney.]
+			TakesLessThan: 100. ! !
 
 !CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 10:52:41'!
 test03CanNotAddACustomerWithEmptyName 
@@ -54,7 +52,7 @@ test03CanNotAddACustomerWithEmptyName
 
 	self fail:  [customerBook addCustomerNamed: ''.] onError: Error assert: assertClosure.! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:15:30'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:37:46'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| johnLennon |
@@ -64,7 +62,7 @@ test04CanNotRemoveAnInvalidCustomer
 
 	self 	fail: [customerBook removeCustomerNamed: 'Paul McCartney'.]  
 			onError: NotFound 
-			assert:  [:anError | self assertOnlyOneCustomerNamed: johnLennon.].! !
+			assert:  [:anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].! !
 
 !CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:19:39'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
@@ -103,7 +101,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:15:53'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:37:53'!
 test07CanNotSuspendAnInvalidCustomer
 	
 	| johnLennon |
@@ -113,9 +111,9 @@ test07CanNotSuspendAnInvalidCustomer
 
 	self 	fail: [customerBook suspendCustomerNamed: 'Paul McCartney'.] 
 			onError: CantSuspend 
-			assert: [ :anError | self assertOnlyOneCustomerNamed: johnLennon.].! !
+			assert: [ :anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:16:27'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'd 9/23/2018 11:37:56'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
 	| johnLennon |
@@ -126,7 +124,7 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 
 	self 	fail: [customerBook suspendCustomerNamed: johnLennon.] 
 			onError: CantSuspend 
-			assert: [ :anError | self assertOnlyOneCustomerNamed: johnLennon.].
+			assert: [ :anError | self assertThereIsOnlyOneCustomerNamed: johnLennon.].
 		
 		
 		
@@ -154,8 +152,8 @@ assertClosure: aClosure TakesLessThan: milliSeconds
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (milliSeconds * millisecond)! !
 
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 11:07:55'!
-assertOnlyOneCustomerNamed: aName.
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 11:37:32'!
+assertThereIsOnlyOneCustomerNamed: aName.
 	self assert: customerBook numberOfCustomers = 1.
 	self assert: (customerBook includesCustomerNamed: aName).! !
 
