@@ -156,15 +156,10 @@ assertThereIsOnlyOneCustomerNamed: aName.
 	self assert: customerBook numberOfCustomers = 1.
 	self assert: (customerBook includesCustomerNamed: aName).! !
 
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'd 9/23/2018 10:50:37'!
-fail: failClosure onError: anError assert: assertClosure
+!CustomerBookTest methodsFor: 'auxiliares' stamp: 'ps 9/23/2018 13:01:13'!
+performClosure: faultyClosure expectingError: anError andPerformPostErrorAssertions: assertionsClosure
 	
-	[failClosure value. self fail. ] on: anError do: [ :error | assertClosure value: error].! !
-
-!CustomerBookTest methodsFor: 'auxiliares' stamp: 'ps 9/23/2018 12:53:09'!
-performClosure: failClosure expectingError: anError andPerformPostErrorAssertions: assertClosure
-	
-	[failClosure value. self fail. ] on: anError do: [ :error | assertClosure value: error].! !
+	[faultyClosure value. self fail. ] on: anError do: [ :error | assertionsClosure value: error].! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
