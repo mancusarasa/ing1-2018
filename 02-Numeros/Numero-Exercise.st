@@ -369,11 +369,10 @@ Numero subclass: #Entero
 	^self class with: value * aMultiplier integerValue
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:00:03'!
 + anAdder 
-	
-	^self class with: value + anAdder integerValue
-! !
+
+	^anAdder addAnInteger: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:40:37'!
 - aSubtrahend 
@@ -389,6 +388,20 @@ Numero subclass: #Entero
 // aDivisor 
 	
 	^self class with: value // aDivisor integerValue! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:13:07'!
+addAFraccion: aFraccionAdder
+
+	| newNumerator |
+	
+	newNumerator := aFraccionAdder numerator + (self * aFraccionAdder denominator).
+	^newNumerator / aFraccionAdder denominator.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 22:31:10'!
+addAnInteger: anIntegerAdder 
+
+	^self class with: value + anIntegerAdder integerValue
+! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
 fibonacci
@@ -419,7 +432,6 @@ greatestCommonDivisorWith: anEntero
 hash
 
 	^value hash! !
-
 
 
 !Entero methodsFor: 'initialization' stamp: 'HernanWilkinson 5/7/2016 20:09'!
@@ -489,15 +501,10 @@ Numero subclass: #Fraccion
 	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:02:32'!
 + anAdder 
 	
-	| newNumerator newDenominator |
-	
-	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-	newDenominator := denominator * anAdder denominator.
-	
-	^newNumerator / newDenominator ! !
+	^ anAdder addAFraccion: self! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:43:50'!
 - aSubtrahend 
@@ -515,6 +522,24 @@ Numero subclass: #Fraccion
 	
 	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
 
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:04:25'!
+addAFraccion: aFraccionAdder
+
+	| newNumerator newDenominator |
+	
+	newNumerator := (numerator * aFraccionAdder denominator) + (denominator * aFraccionAdder numerator).
+	newDenominator := denominator * aFraccionAdder denominator.
+	
+	^newNumerator / newDenominator! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:14:04'!
+addAnInteger: anIntegerAdder 
+
+	| newNumerator |
+	
+	newNumerator := numerator + (denominator * anIntegerAdder).
+	^newNumerator / denominator. ! !
+
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
 = anObject
@@ -525,7 +550,6 @@ Numero subclass: #Fraccion
 hash
 
 	^(numerator hash / denominator hash) hash! !
-
 
 
 !Fraccion methodsFor: 'accessing' stamp: 'HernanWilkinson 5/7/2016 21:56'!
