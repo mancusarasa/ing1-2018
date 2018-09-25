@@ -363,10 +363,10 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:21:34'!
 * aMultiplier 
 	
-	^self class with: value * aMultiplier integerValue
+	^aMultiplier multiplyAnInteger: self.
 	! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:00:03'!
@@ -421,6 +421,20 @@ fibonacci
 greatestCommonDivisorWith: anEntero 
 	
 	^self class with: (value gcd: anEntero integerValue)! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:23:57'!
+multiplyAFraccion: aFraccionMultiplier
+	| newNumerator |
+
+	newNumerator := self * aFraccionMultiplier numerator.
+	^ newNumerator / (aFraccionMultiplier denominator)
+! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:20:54'!
+multiplyAnInteger: anIntegerMultiplier
+
+	^self class with: value * anIntegerMultiplier integerValue
+! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -495,10 +509,10 @@ Numero subclass: #Fraccion
 	poolDictionaries: ''
 	category: 'Numero-Exercise'!
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:28:02'!
 * aMultiplier 
 	
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
+	^ aMultiplier multiplyAFraccion: self.
 	! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:02:32'!
@@ -538,6 +552,19 @@ addAnInteger: anIntegerAdder
 	| newNumerator |
 	
 	newNumerator := numerator + (denominator * anIntegerAdder).
+	^newNumerator / denominator. ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:27:42'!
+multiplyAFraccion: aFraccionMultiplier 
+
+	^(numerator * aFraccionMultiplier numerator) / (denominator * aFraccionMultiplier denominator)! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:25:56'!
+multiplyAnInteger: anIntegerMultiplier 
+
+	| newNumerator |
+	
+	newNumerator := numerator * anIntegerMultiplier.
 	^newNumerator / denominator. ! !
 
 
