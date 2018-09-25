@@ -379,10 +379,9 @@ Numero subclass: #Entero
 	
 	^ self class with: value - aSubtrahend integerValue.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 14:52:41'!
 / aDivisor 
-	
-	^Fraccion with: self over: aDivisor! !
+	^aDivisor divideAnInteger: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
 // aDivisor 
@@ -402,6 +401,16 @@ addAnInteger: anIntegerAdder
 
 	^self class with: value + anIntegerAdder integerValue
 ! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 15:05:17'!
+divideAFraccion: aFraccionDividend.
+
+	^ aFraccionDividend numerator / (self *aFraccionDividend denominator).! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 15:01:32'!
+divideAnInteger: anIntegerDividend.
+
+	^Fraccion with: anIntegerDividend over: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
 fibonacci
@@ -531,10 +540,10 @@ Numero subclass: #Fraccion
 	^newNumerator / newDenominator 
 ! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 14:56:21'!
 / aDivisor 
-	
-	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
+
+	^aDivisor divideAFraccion: self! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:04:25'!
 addAFraccion: aFraccionAdder
@@ -553,6 +562,16 @@ addAnInteger: anIntegerAdder
 	
 	newNumerator := numerator + (denominator * anIntegerAdder).
 	^newNumerator / denominator. ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 15:00:29'!
+divideAFraccion: aFraccionDividend
+
+	^(aFraccionDividend numerator * denominator) / (aFraccionDividend denominator * numerator)! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 15:00:56'!
+divideAnInteger: anIntegerDividend
+
+	^(anIntegerDividend * denominator) / (numerator)! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:27:42'!
 multiplyAFraccion: aFraccionMultiplier 
