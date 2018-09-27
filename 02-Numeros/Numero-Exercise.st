@@ -369,15 +369,15 @@ Numero subclass: #Entero
 	^aMultiplier multiplyAnInteger: self.
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/24/2018 23:00:03'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 20:12:34'!
 + anAdder 
-
+	
 	^anAdder addAnInteger: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:40:37'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 16:54:35'!
 - aSubtrahend 
 	
-	^ self class with: value - aSubtrahend integerValue.! !
+	^ aSubtrahend substractMeFromInteger: self! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 14:52:41'!
 / aDivisor 
@@ -444,6 +444,23 @@ multiplyAnInteger: anIntegerMultiplier
 
 	^self class with: value * anIntegerMultiplier integerValue
 ! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 20:28:28'!
+substractMeFromFraccion: aFraccionSubtrahend 
+	
+	| newNumerator |
+	
+	newNumerator := aFraccionSubtrahend numerator - (self * (aFraccionSubtrahend denominator)).
+	^newNumerator / (aFraccionSubtrahend denominator).
+	
+	
+	
+	! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 16:53:48'!
+substractMeFromInteger: anIntegerSubtrahend 
+	
+	^ self class with: anIntegerSubtrahend integerValue - value! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -529,16 +546,10 @@ Numero subclass: #Fraccion
 	
 	^ anAdder addAFraccion: self! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:43:50'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 20:30:12'!
 - aSubtrahend 
 	
-	| newNumerator newDenominator |
-	
-	newNumerator := (numerator * aSubtrahend denominator) - (denominator * aSubtrahend numerator).
-	newDenominator := denominator * aSubtrahend denominator.
-	
-	^newNumerator / newDenominator 
-! !
+	^aSubtrahend substractMeFromFraccion: self.! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'ps 9/25/2018 14:56:21'!
 / aDivisor 
@@ -585,6 +596,30 @@ multiplyAnInteger: anIntegerMultiplier
 	
 	newNumerator := numerator * anIntegerMultiplier.
 	^newNumerator / denominator. ! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 20:21:18'!
+substractMeFromFraccion: aFraccionSubtrahend
+
+	| newNumerator newDenominator |
+	
+	newNumerator := (aFraccionSubtrahend numerator * self denominator) - (aFraccionSubtrahend denominator * self numerator).
+	newDenominator := aFraccionSubtrahend denominator * self denominator.
+	
+	^newNumerator / newDenominator 
+! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'wp 9/27/2018 17:12:02'!
+substractMeFromInteger: anIntegerSubtrahend 
+	
+	| newNumerator |
+	
+	newNumerator := (anIntegerSubtrahend * self denominator)  - self numerator.
+	^newNumerator / self denominator.
+	
+	
+	
+	
+	! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
