@@ -135,6 +135,36 @@ Object subclass: #Queue
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
 
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:46:46'!
+dequeue
+	| firstInLine |
+	
+	(self size = 0) ifTrue:[self error: self class queueEmptyErrorDescription].
+	firstInLine:= contents at: 1.
+	contents removeFirst.
+	^ firstInLine! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:42:50'!
+enqueue: anElement
+	contents add: anElement.! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:34:38'!
+initialize
+	contents:= OrderedCollection new.! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:35:32'!
+isEmpty
+	^contents isEmpty.! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:47:44'!
+next
+	(self size = 0) ifTrue:[self error: self class queueEmptyErrorDescription].
+	^contents at: contents size! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:29:57'!
+size
+	^contents size.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Queue class' category: #'Queue-Exercise'!
