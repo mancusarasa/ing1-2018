@@ -511,15 +511,11 @@ Entero class
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para enteros negativos'! !
 
-!Entero class methodsFor: 'instance creation' stamp: 'd 9/28/2018 16:14:21'!
+!Entero class methodsFor: 'instance creation' stamp: 'd 9/29/2018 12:03:15'!
 with: aValue 
-	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	aValue<0 ifTrue:[^Negativo with: aValue].
-	aValue=0 ifTrue:[^Zero with: 0].
-	aValue=1 ifTrue:[^Uno with: 1].
-	aValue>0 ifTrue:[^Positivo with: aValue].! !
+	| EnteroSubClass |
+	 EnteroSubClass := self subclasses detect:[:aSubClass| aSubClass tipo:aValue].
+	^EnteroSubClass new initalizeWith: aValue.! !
 
 
 !classDefinition: #Negativo category: #'Numero-Exercise'!
@@ -540,13 +536,10 @@ fibonacci
 Negativo class
 	instanceVariableNames: ''!
 
-!Negativo class methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 14:26:22'!
-with: aValue 
+!Negativo class methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 12:03:58'!
+tipo: aValue 
 	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
-	^self new initalizeWith: aValue! !
+	^aValue < 0.! !
 
 
 !classDefinition: #Positivo category: #'Numero-Exercise'!
@@ -574,13 +567,10 @@ fibonacci
 Positivo class
 	instanceVariableNames: ''!
 
-!Positivo class methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 14:57:55'!
-with: aValue 
+!Positivo class methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 12:06:41'!
+tipo: aValue 
 	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
-	^self new initalizeWith: aValue! !
+	^aValue > 1.! !
 
 
 !classDefinition: #Uno category: #'Numero-Exercise'!
@@ -601,13 +591,10 @@ fibonacci
 Uno class
 	instanceVariableNames: ''!
 
-!Uno class methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 16:10:32'!
-with: aValue 
-	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
-	^self new initalizeWith: aValue! !
+!Uno class methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 12:04:39'!
+tipo: aValue 
+
+	^aValue = 1.! !
 
 
 !classDefinition: #Zero category: #'Numero-Exercise'!
@@ -629,13 +616,10 @@ fibonacci
 Zero class
 	instanceVariableNames: ''!
 
-!Zero class methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 14:48:10'!
-with: aValue 
-	
-	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
-	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
-	^self new initalizeWith: aValue! !
+!Zero class methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 12:04:44'!
+tipo: aValue 
+
+	^aValue = 0.! !
 
 
 !classDefinition: #Fraccion category: #'Numero-Exercise'!
