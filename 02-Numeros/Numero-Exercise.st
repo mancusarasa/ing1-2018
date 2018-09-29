@@ -486,6 +486,21 @@ printOn: aStream
 	aStream print: value ! !
 
 
+!Entero methodsFor: 'testing' stamp: 'd 9/29/2018 15:16:13'!
+ifNegativeDo: aBlock.
+	
+! !
+
+!Entero methodsFor: 'testing' stamp: 'd 9/29/2018 15:17:41'!
+ifOneDo: aBlock.
+	
+! !
+
+!Entero methodsFor: 'testing' stamp: 'd 9/29/2018 15:09:20'!
+ifZeroDo: aBlock.
+	
+! !
+
 !Entero methodsFor: 'testing' stamp: 'NR 9/23/2018 22:17:55'!
 isNegative
 	
@@ -529,6 +544,11 @@ Entero subclass: #Negativo
 fibonacci
 
 	self error: Entero negativeFibonacciErrorDescription.! !
+
+!Negativo methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 15:16:44'!
+ifNegativeDo: aBlock.
+	
+	aBlock value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -585,6 +605,11 @@ fibonacci
 	
 	^ Entero with: 1.! !
 
+!Uno methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 15:18:04'!
+ifOneDo: aBlock.
+	
+	aBlock value.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Uno class' category: #'Numero-Exercise'!
@@ -609,6 +634,11 @@ fibonacci
 
 	^(Entero with: 1).
 ! !
+
+!Zero methodsFor: 'as yet unclassified' stamp: 'd 9/29/2018 15:09:26'!
+ifZeroDo: aBlock.
+	
+	aBlock value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -779,21 +809,21 @@ printOn: aStream
 Fraccion class
 	instanceVariableNames: ''!
 
-!Fraccion class methodsFor: 'intance creation' stamp: 'NR 9/23/2018 23:45:19'!
+!Fraccion class methodsFor: 'intance creation' stamp: 'd 9/29/2018 15:18:16'!
 with: aDividend over: aDivisor
 
 	| greatestCommonDivisor numerator denominator |
 	
-	aDivisor isZero ifTrue: [ self error: self canNotDivideByZeroErrorDescription ].
-	aDividend isZero ifTrue: [ ^aDividend ].
+	aDivisor ifZeroDo:  [ self error: self canNotDivideByZeroErrorDescription ].
+	aDividend ifZeroDo: [ ^aDividend ].
 	
-	aDivisor isNegative ifTrue:[ ^aDividend negated / aDivisor negated].
+	aDivisor ifNegativeDo:[ ^aDividend negated / aDivisor negated].
 	
 	greatestCommonDivisor := aDividend greatestCommonDivisorWith: aDivisor. 
 	numerator := aDividend // greatestCommonDivisor.
 	denominator := aDivisor // greatestCommonDivisor.
 	
-	denominator isOne ifTrue: [ ^numerator ].
+	denominator ifOneDo: [ ^numerator ].
 
 	^self new initializeWith: numerator over: denominator
 	! !
