@@ -130,40 +130,54 @@ test10CanNotNextWhenThereAreNoObjectsInTheQueue
 
 !classDefinition: #Queue category: #'Queue-Exercise'!
 Object subclass: #Queue
-	instanceVariableNames: 'contents'
+	instanceVariableNames: 'contents state'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:46:46'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:39:53'!
 dequeue
+
 	| firstInLine |
 	
-	(self size = 0) ifTrue:[self error: self class queueEmptyErrorDescription].
+	state assertNonEmpty.
 	firstInLine:= contents at: 1.
 	contents removeFirst.
+	self updateCurrentState.
 	^ firstInLine! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:42:50'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:39:16'!
 enqueue: anElement
-	contents add: anElement.! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:34:38'!
+	contents add: anElement.
+	self updateCurrentState ! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:39:21'!
 initialize
-	contents:= OrderedCollection new.! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 18:35:32'!
+	contents := OrderedCollection new.
+	self updateCurrentState.! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:10'!
 isEmpty
-	^contents isEmpty.! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:47:44'!
+	^state isEmpty ! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:28'!
 next
-	(self size = 0) ifTrue:[self error: self class queueEmptyErrorDescription].
+
+	state assertNonEmpty.
 	^contents at: contents size! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'd 9/28/2018 19:29:57'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:32'!
 size
+
 	^contents size.! !
+
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:28:34'!
+updateCurrentState
+
+	state := QueueState with: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -174,3 +188,101 @@ Queue class
 !Queue class methodsFor: 'error descriptions'!
 queueEmptyErrorDescription
 	^ 'Queue is empty'.! !
+
+
+!classDefinition: #QueueState category: #'Queue-Exercise'!
+Object subclass: #QueueState
+	instanceVariableNames: 'queue'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!QueueState methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:32:55'!
+assertNonEmpty
+
+	^self subclassResponsibility ! !
+
+!QueueState methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:14:43'!
+initializeWith: aQueue
+
+	queue := aQueue ! !
+
+!QueueState methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:25:07'!
+isEmpty
+
+	^self subclassResponsibility ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'QueueState class' category: #'Queue-Exercise'!
+QueueState class
+	instanceVariableNames: ''!
+
+!QueueState class methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:15:47'!
+matches: aQueue
+
+	^self subclassResponsibility! !
+
+!QueueState class methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:27:00'!
+with: aQueue
+	| queueStateSubclass |
+	queueStateSubclass := self subclasses detect: [ :aSubClass | aSubClass matches: aQueue].
+	^queueStateSubclass new initializeWith: aQueue.! !
+
+
+!classDefinition: #Empty category: #'Queue-Exercise'!
+QueueState subclass: #Empty
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!Empty methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:34:12'!
+assertNonEmpty
+
+	^self error: Queue queueEmptyErrorDescription! !
+
+!Empty methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:25:23'!
+isEmpty
+
+	^ true! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Empty class' category: #'Queue-Exercise'!
+Empty class
+	instanceVariableNames: ''!
+
+!Empty class methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:18:56'!
+matches: aQueue
+
+	^aQueue size = 0! !
+
+
+!classDefinition: #NonEmpty category: #'Queue-Exercise'!
+QueueState subclass: #NonEmpty
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Queue-Exercise'!
+
+!NonEmpty methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:34:37'!
+assertNonEmpty
+
+	^self! !
+
+!NonEmpty methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:25:37'!
+isEmpty
+
+	^ false! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'NonEmpty class' category: #'Queue-Exercise'!
+NonEmpty class
+	instanceVariableNames: ''!
+
+!NonEmpty class methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:19:14'!
+matches: aQueue
+
+	^aQueue size > 0! !
