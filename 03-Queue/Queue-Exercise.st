@@ -135,13 +135,13 @@ Object subclass: #Queue
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:39:53'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 10/2/2018 09:56:46'!
 dequeue
 
 	| firstInLine |
 	
 	state assertNonEmpty.
-	firstInLine:= contents at: 1.
+	firstInLine:= contents first.
 	contents removeFirst.
 	self updateCurrentState.
 	^ firstInLine! !
@@ -163,11 +163,11 @@ isEmpty
 
 	^state isEmpty ! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'ps 10/1/2018 21:38:59'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'd 10/2/2018 09:57:05'!
 next
 
 	state assertNonEmpty.
-	^contents at: 1.! !
+	^contents first.! !
 
 !Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:32'!
 size
@@ -192,7 +192,7 @@ queueEmptyErrorDescription
 
 !classDefinition: #QueueState category: #'Queue-Exercise'!
 Object subclass: #QueueState
-	instanceVariableNames: 'queue'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Queue-Exercise'!
@@ -201,11 +201,6 @@ Object subclass: #QueueState
 assertNonEmpty
 
 	^self subclassResponsibility ! !
-
-!QueueState methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:14:43'!
-initializeWith: aQueue
-
-	queue := aQueue ! !
 
 !QueueState methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:25:07'!
 isEmpty
@@ -223,11 +218,12 @@ matches: aQueue
 
 	^self subclassResponsibility! !
 
-!QueueState class methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:27:00'!
+!QueueState class methodsFor: 'as yet unclassified' stamp: 'd 10/2/2018 10:01:21'!
 with: aQueue
 	| queueStateSubclass |
+	
 	queueStateSubclass := self subclasses detect: [ :aSubClass | aSubClass matches: aQueue].
-	^queueStateSubclass new initializeWith: aQueue.! !
+	^queueStateSubclass new.! !
 
 
 !classDefinition: #Empty category: #'Queue-Exercise'!
