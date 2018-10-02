@@ -163,11 +163,11 @@ isEmpty
 
 	^state isEmpty ! !
 
-!Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:28'!
+!Queue methodsFor: 'as yet unclassified' stamp: 'ps 10/1/2018 21:38:59'!
 next
 
 	state assertNonEmpty.
-	^contents at: contents size! !
+	^contents at: 1.! !
 
 !Queue methodsFor: 'as yet unclassified' stamp: 'ps 9/30/2018 14:38:32'!
 size
