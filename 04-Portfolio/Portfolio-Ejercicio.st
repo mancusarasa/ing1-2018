@@ -10,6 +10,12 @@ value
 
 	self subclassResponsibility ! !
 
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'ps 10/11/2018 21:16:53'!
+relativeValue
+
+	self subclassResponsibility ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'AccountTransaction class' category: #'Portfolio-Ejercicio'!
@@ -40,6 +46,11 @@ initializeFor: aValue
 	value := aValue ! !
 
 
+!Deposit methodsFor: 'value' stamp: 'ps 10/11/2018 21:17:10'!
+relativeValue
+
+	^ value! !
+
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
@@ -69,6 +80,11 @@ initializeFor: aValue
 
 	value := aValue ! !
 
+
+!Withdraw methodsFor: 'value' stamp: 'ps 10/11/2018 21:17:34'!
+relativeValue
+
+	^ -1*value! !
 
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
 value
@@ -119,38 +135,48 @@ balance
 
 !classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
 SummarizingAccount subclass: #Portfolio
-	instanceVariableNames: ''
+	instanceVariableNames: 'accounts'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'balance' stamp: 'ps 10/11/2018 21:28:39'!
 balance
 
-	self shouldBeImplemented ! !
+	^ accounts sum: [:anElement | anElement balance] ifEmpty: [0]! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
+!Portfolio methodsFor: 'testing' stamp: 'ps 10/11/2018 21:46:38'!
 doesManage: anAccount
 
-	self shouldBeImplemented 
-! !
+	^accounts anySatisfy: [:anElement | anElement=anAccount or: (anElement doesManage: anAccount)]! !
 
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
+!Portfolio methodsFor: 'testing' stamp: 'ps 10/11/2018 21:42:42'!
 hasRegistered: aTransaction
 
-	self shouldBeImplemented ! !
+	^accounts anySatisfy: [:anElement | anElement hasRegistered: aTransaction]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'transactions' stamp: 'ps 10/11/2018 21:51:45'!
 transactions 
 
-	self shouldBeImplemented ! !
+	^ accounts inject: (OrderedCollection new) into: [ :collection :element | collection addAll: (element transactions) ]! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
 transactionsOf: anAccount 
 
 	self shouldBeImplemented ! !
+
+
+!Portfolio methodsFor: 'initialization' stamp: 'ps 10/11/2018 21:30:25'!
+initializeWith: leftAccount  with: rightAccount 
+
+	accounts := OrderedCollection with: leftAccount with: rightAccount ! !
+
+!Portfolio methodsFor: 'initialization' stamp: 'ps 10/11/2018 21:22:13'!
+initializeWithAll: aCollectionOfAccounts
+
+	accounts := aCollectionOfAccounts ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -158,15 +184,15 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HAW 5/8/2018 16:10:00'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/11/2018 21:33:34'!
 with: leftAccount with: rightAccount
 
-	self shouldBeImplemented ! !
+	^self new initializeWith: leftAccount  with: rightAccount ! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/11/2018 21:33:40'!
 withAll: aCollectionOfAccounts
 
-	self shouldBeImplemented ! !
+	^self new initializeWithAll: aCollectionOfAccounts.! !
 
 
 !Portfolio class methodsFor: 'error messages' stamp: 'HAW 5/8/2018 16:08:43'!
@@ -206,10 +232,10 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'HAW 10/11/2018 16:51:30'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'ps 10/11/2018 21:16:29'!
 balance
 
-	self shouldBeImplemented ! !
+	^transactions inject: 0 into: [:subTotal :aTrx | subTotal + aTrx relativeValue]! !
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
