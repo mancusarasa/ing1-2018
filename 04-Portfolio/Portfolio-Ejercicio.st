@@ -157,10 +157,17 @@ hasRegistered: aTransaction
 	^accounts anySatisfy: [:anElement | anElement hasRegistered: aTransaction]! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'ps 10/11/2018 21:51:45'!
+!Portfolio methodsFor: 'transactions' stamp: 'ps 10/13/2018 12:02:34'!
 transactions 
 
-	^ accounts inject: (OrderedCollection new) into: [ :collection :element | collection addAll: (element transactions) ]! !
+	| transactions |
+	
+	transactions := OrderedCollection new.
+	accounts do: [
+		:anAccount |
+		transactions addAll: anAccount transactions.	
+	]. 
+	^ transactions! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
 transactionsOf: anAccount 
