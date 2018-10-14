@@ -127,6 +127,11 @@ transactions
 	self subclassResponsibility ! !
 
 
+!SummarizingAccount methodsFor: 'accounts' stamp: 'd 10/14/2018 19:12:41'!
+allAccounts
+	self subclassResponsibility ! !
+
+
 !SummarizingAccount methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:34'!
 balance
 
@@ -166,21 +171,29 @@ transactions
 		transactions
 	].! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'd 10/14/2018 13:44:28'!
+!Portfolio methodsFor: 'transactions' stamp: 'd 10/14/2018 19:14:02'!
 transactionsOf: anAccount 
+
+	"^ (self allAccounts detect: [:anElement | anElement = anAccount ] ifNone:[self error: Portfolio accountNotManagedMessageDescription]) transactions."
 	(self doesManage: anAccount)  ifFalse:[self error: Portfolio accountNotManagedMessageDescription]. 
 	^anAccount transactions.! !
 
-
-!Portfolio methodsFor: 'initialization' stamp: 'ps 10/11/2018 21:30:25'!
-initializeWith: leftAccount  with: rightAccount 
-
-	accounts := OrderedCollection with: leftAccount with: rightAccount ! !
 
 !Portfolio methodsFor: 'initialization' stamp: 'ps 10/11/2018 21:22:13'!
 initializeWithAll: aCollectionOfAccounts
 
 	accounts := aCollectionOfAccounts ! !
+
+
+!Portfolio methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:45'!
+allAccounts
+
+	^accounts inject: OrderedCollection new into:
+	 [
+		:totalAccounts :anAccount |
+		totalAccounts addAll: anAccount allAccounts.
+		totalAccounts
+	].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -188,15 +201,22 @@ initializeWithAll: aCollectionOfAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 13:46:52'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 18:35:53'!
 with: leftAccount with: rightAccount
 
-	(leftAccount = rightAccount)  ifTrue:[self error: Portfolio accountAlreadyManagedErrorMessage ]. 
-	^self new initializeWith: leftAccount  with: rightAccount ! !
+	^self withAll: (OrderedCollection with: leftAccount with: rightAccount).! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/11/2018 21:33:40'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 19:14:13'!
 withAll: aCollectionOfAccounts
-
+	| accounts accountsAndSubAccounts|
+	
+	accounts := OrderedCollection new.
+	accountsAndSubAccounts:= OrderedCollection new.
+	
+	aCollectionOfAccounts do: [:aSummarizingAccount | accountsAndSubAccounts addAll: aSummarizingAccount allAccounts ].
+		
+	accountsAndSubAccounts do: [:e | accounts detect:[ :f | e=f] ifFound: [:g| self error: Portfolio accountAlreadyManagedErrorMessage] ifNone:[accounts add: e] ].
+	
 	^self new initializeWithAll: aCollectionOfAccounts.! !
 
 
@@ -254,3 +274,8 @@ hasRegistered: aTtransaction
 
 	^ transactions includes: aTtransaction 
 ! !
+
+
+!ReceptiveAccount methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:11'!
+allAccounts 
+	^ OrderedCollection with: self.! !
