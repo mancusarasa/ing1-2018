@@ -166,10 +166,10 @@ transactions
 		transactions
 	].! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
+!Portfolio methodsFor: 'transactions' stamp: 'd 10/14/2018 13:44:28'!
 transactionsOf: anAccount 
-
-	self shouldBeImplemented ! !
+	(self doesManage: anAccount)  ifFalse:[self error: Portfolio accountNotManagedMessageDescription]. 
+	^anAccount transactions.! !
 
 
 !Portfolio methodsFor: 'initialization' stamp: 'ps 10/11/2018 21:30:25'!
@@ -188,9 +188,10 @@ initializeWithAll: aCollectionOfAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/11/2018 21:33:34'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 13:46:52'!
 with: leftAccount with: rightAccount
 
+	(leftAccount = rightAccount)  ifTrue:[self error: Portfolio accountAlreadyManagedErrorMessage ]. 
 	^self new initializeWith: leftAccount  with: rightAccount ! !
 
 !Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/11/2018 21:33:40'!

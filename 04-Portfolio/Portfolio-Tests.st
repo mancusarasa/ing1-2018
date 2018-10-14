@@ -292,23 +292,6 @@ test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio
 		withExceptionDo: [ :invalidPortfolio |
 			self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/8/2018 16:11:42'!
-test20_01CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolioTwo
-
-    | account1 account2 account3 complexPortfolio1 complexPortfolio2 |
-    
-    account1 := ReceptiveAccount new.
-    account2 := ReceptiveAccount new.
-    account3 := ReceptiveAccount new.    
-    complexPortfolio1 := Portfolio with: account1 with: account2.
-    complexPortfolio2 := Portfolio with: account3 with: account1.
-
-    self 
-        should: [ Portfolio with: complexPortfolio1 with: complexPortfolio2 ]
-        raise: Error
-        withExceptionDo: [ :invalidPortfolio |
-            self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
-
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/8/2018 16:09:32'!
 test21CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolioTwo
 
@@ -325,4 +308,3 @@ test21CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolioTwo
         raise: Error
         withExceptionDo: [ :invalidPortfolio |
             self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
-
