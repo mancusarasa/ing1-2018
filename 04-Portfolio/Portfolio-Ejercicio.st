@@ -151,15 +151,15 @@ balance
 	^ accounts sum: [:anElement | anElement balance] ifEmpty: [0]! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'ps 10/11/2018 21:46:38'!
+!Portfolio methodsFor: 'testing' stamp: 'ps 10/15/2018 20:40:58'!
 doesManage: anAccount
 
-	^accounts anySatisfy: [:anElement | anElement=anAccount or: (anElement doesManage: anAccount)]! !
+	^accounts anySatisfy: [:aSummarizingAccount | aSummarizingAccount=anAccount or: (aSummarizingAccount doesManage: anAccount)]! !
 
-!Portfolio methodsFor: 'testing' stamp: 'ps 10/11/2018 21:42:42'!
+!Portfolio methodsFor: 'testing' stamp: 'ps 10/15/2018 20:41:13'!
 hasRegistered: aTransaction
 
-	^accounts anySatisfy: [:anElement | anElement hasRegistered: aTransaction]! !
+	^accounts anySatisfy: [:aSummarizingAccount | aSummarizingAccount hasRegistered: aTransaction]! !
 
 
 !Portfolio methodsFor: 'transactions' stamp: 'ps 10/13/2018 12:14:33'!
@@ -171,11 +171,10 @@ transactions
 		transactions
 	].! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'd 10/14/2018 19:14:02'!
+!Portfolio methodsFor: 'transactions' stamp: 'ps 10/15/2018 20:41:53'!
 transactionsOf: anAccount 
 
-	"^ (self allAccounts detect: [:anElement | anElement = anAccount ] ifNone:[self error: Portfolio accountNotManagedMessageDescription]) transactions."
-	(self doesManage: anAccount)  ifFalse:[self error: Portfolio accountNotManagedMessageDescription]. 
+	(self doesManage: anAccount)  ifFalse: [self error: Portfolio accountNotManagedMessageDescription]. 
 	^anAccount transactions.! !
 
 
@@ -185,11 +184,10 @@ initializeWithAll: aCollectionOfAccounts
 	accounts := aCollectionOfAccounts ! !
 
 
-!Portfolio methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:45'!
+!Portfolio methodsFor: 'accounts' stamp: 'ps 10/15/2018 21:00:30'!
 allAccounts
 
-	^accounts inject: OrderedCollection new into:
-	 [
+	^accounts inject: OrderedCollection new into: [
 		:totalAccounts :anAccount |
 		totalAccounts addAll: anAccount allAccounts.
 		totalAccounts
@@ -201,12 +199,26 @@ allAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
+!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/15/2018 21:00:18'!
+verifyThereAreNoRepeatedAccountsIn: aCollectionOfAccounts
+	
+	| accountsAndSubAccounts |
+
+	accountsAndSubAccounts := aCollectionOfAccounts inject: OrderedCollection new into:[
+		:accountsAccumulator :aSummarizingAccount |
+		accountsAccumulator addAll: aSummarizingAccount allAccounts.
+		accountsAccumulator
+	] .
+	accountsAndSubAccounts do: [ :aSummarizingAccount |
+		(accountsAndSubAccounts occurrencesOf: aSummarizingAccount) > 1 ifTrue: [self error: Portfolio accountAlreadyManagedErrorMessage]
+	].! !
+
 !Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 18:35:53'!
 with: leftAccount with: rightAccount
 
 	^self withAll: (OrderedCollection with: leftAccount with: rightAccount).! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'd 10/14/2018 19:14:13'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'ps 10/15/2018 20:48:10'!
 withAll: aCollectionOfAccounts
 	| accounts accountsAndSubAccounts|
 	
@@ -215,7 +227,9 @@ withAll: aCollectionOfAccounts
 	
 	aCollectionOfAccounts do: [:aSummarizingAccount | accountsAndSubAccounts addAll: aSummarizingAccount allAccounts ].
 		
-	accountsAndSubAccounts do: [:e | accounts detect:[ :f | e=f] ifFound: [:g| self error: Portfolio accountAlreadyManagedErrorMessage] ifNone:[accounts add: e] ].
+	accountsAndSubAccounts do: [:aSummarizingAccount | accounts detect:[ :anAccount | aSummarizingAccount=anAccount] ifFound: [:repeatedAccount | self error: Portfolio accountAlreadyManagedErrorMessage] ifNone:[accounts add: aSummarizingAccount] ].
+	self verifyThereAreNoRepeatedAccountsIn: aCollectionOfAccounts.
+	
 	
 	^self new initializeWithAll: aCollectionOfAccounts.! !
 
@@ -257,10 +271,10 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'ps 10/11/2018 21:16:29'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'ps 10/15/2018 21:01:23'!
 balance
 
-	^transactions inject: 0 into: [:subTotal :aTrx | subTotal + aTrx relativeValue]! !
+	^ transactions inject: 0 into: [:subTotal :aTrx | subTotal + aTrx relativeValue]! !
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
@@ -269,13 +283,14 @@ doesManage: anAccount
 	^ self = anAccount 
 ! !
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
-hasRegistered: aTtransaction
+!ReceptiveAccount methodsFor: 'testing' stamp: 'ps 10/15/2018 20:39:13'!
+hasRegistered: aTransaction
 
-	^ transactions includes: aTtransaction 
+	^ transactions includes: aTransaction 
 ! !
 
 
-!ReceptiveAccount methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:11'!
+!ReceptiveAccount methodsFor: 'accounts' stamp: 'ps 10/15/2018 21:01:12'!
 allAccounts 
+
 	^ OrderedCollection with: self.! !
