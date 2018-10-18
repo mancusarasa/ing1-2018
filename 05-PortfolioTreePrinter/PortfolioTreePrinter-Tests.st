@@ -5,6 +5,11 @@ TestCase subclass: #PortfolioTest
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Tests'!
 
+!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:28:42'!
+registerDepositFor: amount into: account
+	
+	^Deposit register: amount on: account.! !
+
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:20:55'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
 
@@ -274,39 +279,39 @@ test19CanNotCreatePortfoliosWithRepeatedAccount
 		withExceptionDo: [ :invalidPortfolio |
 			self assert: Portfolio accountAlreadyManagedErrorMessage  = invalidPortfolio messageText ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:26:12'!
+!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:22:55'!
 test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio 
 
 	| account1 account2 account3 complexPortfolio |
 	
-	account1 := ReceptiveAccount1 new.
-	account2 := ReceptiveAccount1 new.
-	account3 := ReceptiveAccount1 new.
-	complexPortfolio := Portfolio1 withAll: (Array with: account1 with: account2 with: account3).
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	account3 := ReceptiveAccount new.
+	complexPortfolio := Portfolio withAll: (Array with: account1 with: account2 with: account3).
 
 	self 
-		should: [ Portfolio1 withAll: (Array with: complexPortfolio with: account1) ]
+		should: [ Portfolio withAll: (Array with: complexPortfolio with: account1) ]
 		raise: Error
 		withExceptionDo: [ :invalidPortfolio |
-			self assert: Portfolio1 accountAlreadyManagedErrorMessage = invalidPortfolio messageText ]! !
+			self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ]! !
 
-!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:29:51'!
+!PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 18:23:08'!
 test20_01CanNotCreatePortfoliosWithPortfoliosThatManagedSameAccounts
 
     | account1 account2 account3 complexPortfolio1 complexPortfolio2 |
     
-    account1 := ReceptiveAccount1 new.
-    account2 := ReceptiveAccount1 new.
-    account3 := ReceptiveAccount1 new.    
-    complexPortfolio1 := Portfolio1 withAll: (Array with: account1 with: account2).
-    complexPortfolio2 := Portfolio1 withAll: (Array with: account3 with: account1).
+    account1 := ReceptiveAccount new.
+    account2 := ReceptiveAccount new.
+    account3 := ReceptiveAccount new.    
+    complexPortfolio1 := Portfolio withAll: (Array with: account1 with: account2).
+    complexPortfolio2 := Portfolio withAll: (Array with: account3 with: account1).
 
 
     self 
-        should: [ Portfolio1 with: complexPortfolio1 with: complexPortfolio2 ]
+        should: [ Portfolio with: complexPortfolio1 with: complexPortfolio2 ]
         raise: Error
         withExceptionDo: [ :invalidPortfolio |
-            self assert: Portfolio1 accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
+            self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
 
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:35:21'!
 test21TransferShouldWithdrawFromFromAccountAndDepositIntoToAccount
