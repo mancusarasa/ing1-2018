@@ -558,10 +558,10 @@ registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInteresRate
 
 	self shouldBeImplemented ! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HAW 10/18/2018 16:37:27'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/18/2018 23:16:14'!
 registerTransferOf: anAmount from: fromAccount to: toAccount
 
-	self shouldBeImplemented ! !
+	^ Transfer amount: anAmount from: fromAccount to: toAccount! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
