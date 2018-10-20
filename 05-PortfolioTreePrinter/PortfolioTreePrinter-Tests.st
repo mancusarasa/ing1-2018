@@ -533,10 +533,10 @@ accountSummaryLinesOf: aReceptiveAccount
 	
 	^ (SummaryLinesReport with: aReceptiveAccount) getData! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/19/2018 21:49:04'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^ (AccountTransferNetReport with: aReceptiveAccount ) getData! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 investmentEarningsOf: aReceptiveAccount 

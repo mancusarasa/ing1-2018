@@ -48,6 +48,42 @@ with: aReceptiveAccount
 	^ self new initializeWith: aReceptiveAccount ! !
 
 
+!classDefinition: #AccountTransferNetReport category: #'PortfolioTreePrinter-Ejercicio'!
+AccountReport subclass: #AccountTransferNetReport
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountTransferNetReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:49:35'!
+getData
+	
+	^ account transactions inject: 0 into: [
+		:subTotal :transaction |
+		subTotal + (transaction affectReport: self)
+	].! !
+
+!AccountTransferNetReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:46:24'!
+processDeposit: aDeposit
+
+	^ 0! !
+
+!AccountTransferNetReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:52:16'!
+processDepositLeg: aDepositLeg
+
+	^ aDepositLeg value! !
+
+!AccountTransferNetReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:46:48'!
+processWithdraw: aWithdraw
+
+	^ 0! !
+
+!AccountTransferNetReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:51:58'!
+processWithdrawLeg: aWithdrawLeg
+
+	^ (-1)* (aWithdrawLeg value)! !
+
+
 !classDefinition: #SummaryLinesReport category: #'PortfolioTreePrinter-Ejercicio'!
 AccountReport subclass: #SummaryLinesReport
 	instanceVariableNames: ''
