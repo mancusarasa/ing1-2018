@@ -141,11 +141,6 @@ processCertificateOfDeposit: aCertificate
 	^ 'Plazo fijo por ', aCertificate value printString, ' durante ', aCertificate duration printString, ' dias a una tna de ', (aCertificate interestRate*100) printString, '%'.
 ! !
 
-!SummaryLinesReport methodsFor: 'processing' stamp: 'd 10/20/2018 20:35:00'!
-processCertificateOfDepositWithdraw: aCertificateOfDeposit
-
-	^ nil! !
-
 !SummaryLinesReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:37:43'!
 processDeposit: aDeposit
 
@@ -203,61 +198,6 @@ AccountTransaction class
 	instanceVariableNames: ''!
 
 !AccountTransaction class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
-register: aValue on: account
-
-	| withdraw |
-	
-	withdraw := self for: aValue.
-	account register: withdraw.
-		
-	^ withdraw! !
-
-
-!classDefinition: #CertificateOfDepositWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
-AccountTransaction subclass: #CertificateOfDepositWithdraw
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'PortfolioTreePrinter-Ejercicio'!
-
-!CertificateOfDepositWithdraw methodsFor: 'initialization' stamp: 'd 10/20/2018 20:30:37'!
-initializeFor: aValue
-
-	value := aValue ! !
-
-
-!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
-affectBalance: currentBalance
-
-	^currentBalance - value! !
-
-!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:31:04'!
-affectReport: anAccountReport
-
-	^ anAccountReport processCertificateOfDepositWithdraw: self! !
-
-!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
-relativeValue
-
-	^ -1*value! !
-
-!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
-value
-
-	^ value ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'CertificateOfDepositWithdraw class' category: #'PortfolioTreePrinter-Ejercicio'!
-CertificateOfDepositWithdraw class
-	instanceVariableNames: ''!
-
-!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
 register: aValue on: account
 
 	| withdraw |
@@ -440,6 +380,41 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 !Withdraw class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/14/2011 05:32'!
+register: aValue on: account
+
+	| withdraw |
+	
+	withdraw := self for: aValue.
+	account register: withdraw.
+		
+	^ withdraw! !
+
+
+!classDefinition: #CertificateOfDepositWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
+Withdraw subclass: #CertificateOfDepositWithdraw
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+
+!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:31:04'!
+affectReport: anAccountReport
+
+	^ anAccountReport processCertificateOfDepositWithdraw: self! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDepositWithdraw class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDepositWithdraw class
+	instanceVariableNames: ''!
+
+!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
+
+!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
 register: aValue on: account
 
 	| withdraw |
