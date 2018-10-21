@@ -313,6 +313,23 @@ test20_01CanNotCreatePortfoliosWithPortfoliosThatManagedSameAccounts
         withExceptionDo: [ :invalidPortfolio |
             self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
 
+!PortfolioTest methodsFor: 'tests' stamp: 'HAW 5/8/2018 16:09:32'!
+test21CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolioTwo
+
+    | account1 account2 account3 complexPortfolio1 complexPortfolio2 |
+    
+    account1 := ReceptiveAccount new.
+    account2 := ReceptiveAccount new.
+    account3 := ReceptiveAccount new.    
+    complexPortfolio1 := Portfolio with: account1 with: account2.
+    complexPortfolio2 := Portfolio with: account3 with: account1.
+
+    self 
+        should: [ Portfolio with: complexPortfolio1 with: complexPortfolio2 ]
+        raise: Error
+        withExceptionDo: [ :invalidPortfolio |
+            self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ] ! !
+
 !PortfolioTest methodsFor: 'tests' stamp: 'HAW 10/18/2018 16:35:21'!
 test21TransferShouldWithdrawFromFromAccountAndDepositIntoToAccount
 
@@ -538,25 +555,25 @@ accountTransferNetOf: aReceptiveAccount
 	
 	^ (AccountTransferNetReport with: aReceptiveAccount ) getData! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 19:30:33'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^ (InvestmentEarningsReport with: aReceptiveAccount ) getData! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 18:09:00'!
 investmentNetOf: aReceptiveAccount 
 	
-	self shouldBeImplemented ! !
+	^ (InvestmentNetReport with: aReceptiveAccount ) getData! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
 	self shouldBeImplemented ! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HAW 10/18/2018 16:38:05'!
-registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInteresRate on: anAccount
+!PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 17:37:32'!
+registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInterestRate on: anAccount
 
-	self shouldBeImplemented ! !
+	^ CertificateOfDeposit of: anAmount during: aNumberOfDays at: anInterestRate on: anAccount! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'ps 10/18/2018 23:16:14'!
 registerTransferOf: anAmount from: fromAccount to: toAccount

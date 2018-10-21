@@ -84,6 +84,36 @@ processWithdrawLeg: aWithdrawLeg
 	^ (-1)* (aWithdrawLeg value)! !
 
 
+!classDefinition: #InvestmentEarningsReport category: #'PortfolioTreePrinter-Ejercicio'!
+AccountReport subclass: #InvestmentEarningsReport
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!InvestmentEarningsReport methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 19:28:48'!
+getData
+	^ account certificatesOfDeposit inject: 0 into: [
+		:subTotal :certificate |
+		subTotal + certificate earnings .
+	].! !
+
+
+!classDefinition: #InvestmentNetReport category: #'PortfolioTreePrinter-Ejercicio'!
+AccountReport subclass: #InvestmentNetReport
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!InvestmentNetReport methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 18:53:33'!
+getData
+	^ account certificatesOfDeposit inject: 0 into: [
+		:subTotal :certificate |
+		subTotal + (certificate value)
+	].! !
+
+
 !classDefinition: #SummaryLinesReport category: #'PortfolioTreePrinter-Ejercicio'!
 AccountReport subclass: #SummaryLinesReport
 	instanceVariableNames: ''
@@ -91,14 +121,30 @@ AccountReport subclass: #SummaryLinesReport
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!SummaryLinesReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:39:36'!
+!SummaryLinesReport methodsFor: 'processing' stamp: 'd 10/20/2018 20:38:07'!
 getData
 	
-	^ account transactions inject: OrderedCollection new into: [
-		:lines :transaction |
-		lines add: (transaction affectReport: self).
+	^ (account transactions inject: OrderedCollection new into: [
+		:lines :transaction | (transaction isKindOf: CertificateOfDepositWithdraw) ifFalse: [ 
+		lines add: (transaction affectReport: self)].
 		lines
-	]! !
+	]), (account certificatesOfDeposit inject: OrderedCollection new into: [
+		:lines :certificate |
+		lines add: (certificate affectReport: self).
+		lines
+	]).
+! !
+
+!SummaryLinesReport methodsFor: 'processing' stamp: 'd 10/20/2018 20:41:58'!
+processCertificateOfDeposit: aCertificate
+
+	^ 'Plazo fijo por ', aCertificate value printString, ' durante ', aCertificate duration printString, ' dias a una tna de ', (aCertificate interestRate*100) printString, '%'.
+! !
+
+!SummaryLinesReport methodsFor: 'processing' stamp: 'd 10/20/2018 20:35:00'!
+processCertificateOfDepositWithdraw: aCertificateOfDeposit
+
+	^ nil! !
 
 !SummaryLinesReport methodsFor: 'processing' stamp: 'ps 10/19/2018 21:37:43'!
 processDeposit: aDeposit
@@ -127,6 +173,13 @@ Object subclass: #AccountTransaction
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
+
+
+!AccountTransaction methodsFor: 'as yet unclassified' stamp: 'ps 10/11/2018 21:16:53'!
+relativeValue
+
+	self subclassResponsibility ! !
+
 
 !AccountTransaction methodsFor: 'evaluating' stamp: 'HAW 10/18/2018 18:48:48'!
 affectBalance: currentBalance
@@ -160,6 +213,61 @@ register: aValue on: account
 	^ withdraw! !
 
 
+!classDefinition: #CertificateOfDepositWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #CertificateOfDepositWithdraw
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!CertificateOfDepositWithdraw methodsFor: 'initialization' stamp: 'd 10/20/2018 20:30:37'!
+initializeFor: aValue
+
+	value := aValue ! !
+
+
+!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
+affectBalance: currentBalance
+
+	^currentBalance - value! !
+
+!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:31:04'!
+affectReport: anAccountReport
+
+	^ anAccountReport processCertificateOfDepositWithdraw: self! !
+
+!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
+relativeValue
+
+	^ -1*value! !
+
+!CertificateOfDepositWithdraw methodsFor: 'value' stamp: 'd 10/20/2018 20:30:37'!
+value
+
+	^ value ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDepositWithdraw class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDepositWithdraw class
+	instanceVariableNames: ''!
+
+!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
+for: aValue
+
+	^ self new initializeFor: aValue ! !
+
+!CertificateOfDepositWithdraw class methodsFor: 'instance creation' stamp: 'd 10/20/2018 20:30:37'!
+register: aValue on: account
+
+	| withdraw |
+	
+	withdraw := self for: aValue.
+	account register: withdraw.
+		
+	^ withdraw! !
+
+
 !classDefinition: #Deposit category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #Deposit
 	instanceVariableNames: 'value'
@@ -182,6 +290,11 @@ affectBalance: currentBalance
 affectReport: anAccountReport
 
 	^ anAccountReport processDeposit: self! !
+
+!Deposit methodsFor: 'value' stamp: 'ps 10/11/2018 21:17:10'!
+relativeValue
+
+	^ value! !
 
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
@@ -305,6 +418,11 @@ affectReport: anAccountReport
 
 	^ anAccountReport processWithdraw: self! !
 
+!Withdraw methodsFor: 'value' stamp: 'ps 10/11/2018 21:17:34'!
+relativeValue
+
+	^ -1*value! !
+
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/14/2011 05:54'!
 value
 
@@ -330,6 +448,58 @@ register: aValue on: account
 	account register: withdraw.
 		
 	^ withdraw! !
+
+
+!classDefinition: #CertificateOfDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #CertificateOfDeposit
+	instanceVariableNames: 'amount duration interestRate account'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 20:38:53'!
+affectReport: anAccountReport
+
+	^ anAccountReport processCertificateOfDeposit: self! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 20:01:30'!
+duration
+
+	^ duration ! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 19:29:51'!
+earnings
+
+	^ amount *((interestRate )/360)*duration.  ! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 20:32:37'!
+initializeWithAmount: anAmount during: aNumberOfDays at: anInterestRate on: anAccount
+	amount := anAmount .
+	duration := aNumberOfDays . 
+	interestRate := anInterestRate .
+	account := anAccount .
+	CertificateOfDepositWithdraw register: anAmount on: anAccount .
+	account registerCertificateOfDeposit: self.! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 20:01:41'!
+interestRate
+
+	^ interestRate ! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 18:33:44'!
+value
+
+	^ amount ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDeposit class
+	instanceVariableNames: ''!
+
+!CertificateOfDeposit class methodsFor: 'as yet unclassified' stamp: 'd 10/20/2018 17:39:28'!
+of: anAmount during: aNumberOfDays at: anInterestRate on: anAccount
+	^ self new initializeWithAmount: anAmount during: aNumberOfDays at: anInterestRate on: anAccount! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
@@ -360,6 +530,12 @@ transactions
 
 	self subclassResponsibility ! !
 
+
+!SummarizingAccount methodsFor: 'accounts' stamp: 'd 10/14/2018 19:12:41'!
+allAccounts
+	self subclassResponsibility ! !
+
+
 
 !classDefinition: #Portfolio category: #'PortfolioTreePrinter-Ejercicio'!
 SummarizingAccount subclass: #Portfolio
@@ -367,6 +543,7 @@ SummarizingAccount subclass: #Portfolio
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
+
 
 !Portfolio methodsFor: 'testing' stamp: 'HAW 10/18/2018 16:31:24'!
 anyManagedAccountManages: anAccount 
@@ -412,6 +589,17 @@ initializeWithAll: aCollectionOfAccounts
 
 	accounts := aCollectionOfAccounts   ! !
 
+
+!Portfolio methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:45'!
+allAccounts
+
+	^accounts inject: OrderedCollection new into:
+	 [
+		:totalAccounts :anAccount |
+		totalAccounts addAll: anAccount allAccounts.
+		totalAccounts
+	].! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Portfolio class' category: #'PortfolioTreePrinter-Ejercicio'!
@@ -429,6 +617,17 @@ withAll: aCollectionOfAccounts
 	self checkCreationPreconditions: aCollectionOfAccounts.
 	
 	^self new initializeWithAll: aCollectionOfAccounts ! !
+
+
+!Portfolio class methodsFor: 'error messages' stamp: 'HernanWilkinson 7/13/2011 19:28'!
+accountAlreadyManagedErrorMessage
+
+	^ 'Account already managed'! !
+
+!Portfolio class methodsFor: 'error messages' stamp: 'HernanWilkinson 7/13/2011 19:27'!
+accountNotManagedMessageDescription
+	
+	^ 'Account not managed'! !
 
 
 !Portfolio class methodsFor: 'assertions' stamp: 'HAW 10/18/2018 16:31:24'!
@@ -455,30 +654,20 @@ checkNoCircularReferencesIn: aCollectionOfAccounts
 
 	aCollectionOfAccounts do: [ :sourceAccount | self check: sourceAccount doesNotManagaAnyOf: aCollectionOfAccounts ]! !
 
-
-!Portfolio class methodsFor: 'error messages' stamp: 'HernanWilkinson 7/13/2011 19:28'!
-accountAlreadyManagedErrorMessage
-
-	^ 'Account already managed'! !
-
-!Portfolio class methodsFor: 'error messages' stamp: 'HernanWilkinson 7/13/2011 19:27'!
-accountNotManagedMessageDescription
-	
-	^ 'Account not managed'! !
-
 
 !classDefinition: #ReceptiveAccount category: #'PortfolioTreePrinter-Ejercicio'!
 SummarizingAccount subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
+	instanceVariableNames: 'transactions certificates'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:35'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'd 10/20/2018 18:53:09'!
 initialize
 
 	super initialize.
-	transactions := OrderedCollection new.! !
+	transactions := OrderedCollection new.
+	certificates := OrderedCollection new.! !
 
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HAW 10/18/2018 18:49:23'!
@@ -486,16 +675,28 @@ balance
 
 	^ transactions inject: 0 into: [ :balance :transaction | transaction affectBalance: balance ]! !
 
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'd 10/20/2018 18:10:50'!
+certificatesOfDeposit 
+
+	^ certificates copy! !
+
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
 
 	transactions add: aTransaction 
 ! !
 
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'd 10/20/2018 17:54:02'!
+registerCertificateOfDeposit: aCertificate
+
+	certificates add: aCertificate 
+! !
+
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 transactions 
 
 	^ transactions copy! !
+
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/18/2018 16:31:24'!
@@ -509,6 +710,11 @@ hasRegistered: aTtransaction
 
 	^ transactions includes: aTtransaction 
 ! !
+
+
+!ReceptiveAccount methodsFor: 'accounts' stamp: 'd 10/14/2018 19:13:11'!
+allAccounts 
+	^ OrderedCollection with: self.! !
 
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
