@@ -545,30 +545,30 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/19/2018 21:25:23'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:29:28'!
 accountSummaryLinesOf: aReceptiveAccount 
 	
-	^ (SummaryLinesReport with: aReceptiveAccount) getData! !
+	^ (SummaryLinesVisitor with: aReceptiveAccount) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/19/2018 21:49:04'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:28:43'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	^ (AccountTransferNetReport with: aReceptiveAccount ) getData! !
+	^ (AccountTransferNetVisitor with: aReceptiveAccount ) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 19:30:33'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:29:00'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	^ (InvestmentEarningsReport with: aReceptiveAccount ) getData! !
+	^ (InvestmentEarningsVisitor with: aReceptiveAccount ) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 18:09:00'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:29:15'!
 investmentNetOf: aReceptiveAccount 
 	
-	^ (InvestmentNetReport with: aReceptiveAccount ) getData! !
+	^ (InvestmentNetVisitor with: aReceptiveAccount ) value! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:24:00'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	self shouldBeImplemented ! !
+	^ (PortfolioTreeVisitor of: aPortfolio namingAccountWith: aDictionary) value! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'd 10/20/2018 17:37:32'!
 registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInterestRate on: anAccount
@@ -580,7 +580,7 @@ registerTransferOf: anAmount from: fromAccount to: toAccount
 
 	^ Transfer amount: anAmount from: fromAccount to: toAccount! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'ps 10/22/2018 20:24:09'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	self shouldBeImplemented ! !
+	^ (PortfolioTreeVisitor of: aPortfolio namingAccountWith: aDictionary) reversedValue! !
