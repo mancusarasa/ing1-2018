@@ -730,12 +730,11 @@ SummarizingAccount subclass: #ReceptiveAccount
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'd 10/20/2018 18:53:09'!
+!ReceptiveAccount methodsFor: 'initialization' stamp: 'd 10/24/2018 21:01:58'!
 initialize
 
 	super initialize.
-	transactions := OrderedCollection new.
-	certificates := OrderedCollection new.! !
+	transactions := OrderedCollection new.! !
 
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HAW 10/18/2018 18:49:23'!
@@ -747,12 +746,6 @@ balance
 register: aTransaction
 
 	transactions add: aTransaction 
-! !
-
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'd 10/20/2018 17:54:02'!
-registerCertificateOfDeposit: aCertificate
-
-	certificates add: aCertificate 
 ! !
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
@@ -791,11 +784,6 @@ visitAllTransactionsWith: aVisitor
 accept: aPortfolioVisitor withDepth: anInteger
 
 	aPortfolioVisitor visitReceptiveAccount: self withDepth: anInteger! !
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'ps 10/22/2018 19:32:44'!
-accept: aPortfolioVisitor withNames: nameDictionary
-
-	aPortfolioVisitor visitReceptiveAccount: self withNames: nameDictionary ! !
 
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
