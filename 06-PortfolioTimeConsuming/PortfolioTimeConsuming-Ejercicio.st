@@ -11,14 +11,20 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'HernanWilkinson 7/17/2011 23:58'!
+!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'ps 10/25/2018 21:39:05'!
 lines 
 
-	| lines investmentEarnings |
+	| semaphore lines investmentEarnings investmentEarningsValue |
 	
-	investmentEarnings := InvestmentNetVisitor for: account.
+	semaphore := Semaphore new.
+	[
+		investmentEarnings := InvestmentNetVisitor for: account.
+		investmentEarningsValue := investmentEarnings value.
+		semaphore signal.
+	] fork.
 	lines := (AccountSummaryWithInvestmentEarnings for: account) lines.
-	lines add: 'Inversiones por ', investmentEarnings value printString.
+	semaphore wait.
+	lines add: 'Inversiones por ', investmentEarningsValue printString.
 	
 	 ^ lines! !
 
@@ -47,16 +53,20 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'HernanWilkinson 7/17/2011 23:53'!
+!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'ps 10/25/2018 21:39:49'!
 lines 
 
-	| lines investmentEarnings |
-	
-	investmentEarnings := InvestmentEarningVisitor for: account.
+	| semaphore lines investmentEarnings investmentEarningsValue |
+	semaphore := Semaphore new.
+	[
+		investmentEarnings := InvestmentEarningVisitor for: account.
+		investmentEarningsValue := investmentEarnings value.
+		semaphore signal.
+	] fork.
 	lines := (AccountSummary for: account) lines.
-	lines add: 'Ganancias por ', investmentEarnings value printString.
-	
-	 ^ lines! !
+	semaphore wait.
+	lines add: 'Ganancias por ', investmentEarningsValue printString.
+	^ lines! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
