@@ -5,16 +5,16 @@ TestCase subclass: #TerniLapilliTest
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:48:13'!
-test01
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:03'!
+test01NewGameDidntBegin
 
 	| theGame | 
 	
 	theGame := TerniLapilli new.
 	self deny: (theGame began).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:48:58'!
-test02
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:26'!
+test02PlacingTokensBeginsTheGame
 
 	| theGame | 
 	
@@ -22,16 +22,16 @@ test02
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame began).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:52:00'!
-test03
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:47'!
+test03NonTakenPositionIsFree
 
 	| theGame | 
 	
 	theGame := TerniLapilli new.
 	self deny: (theGame positionIsTaken: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:53:14'!
-test04
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:58'!
+test04TakenPositionIsNotFree
 
 	| theGame | 
 	
@@ -39,16 +39,16 @@ test04
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame positionIsTaken: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:59:45'!
-test05
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:44:29'!
+test05NonTakenPositionIsntTakenByPlayerOne
 
 	| theGame | 
 	
 	theGame := TerniLapilli new.
 	self deny: (theGame positionIsTakenByPlayerOne: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 19:59:33'!
-test06
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:44:58'!
+test06PositionTakenByPlayerOneIsTakenByPlayerOne
 
 	| theGame | 
 	
@@ -56,8 +56,8 @@ test06
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame positionIsTakenByPlayerOne: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 20:15:09'!
-test07
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:45:27'!
+test07PlayerTwoCantPlaceTokenBeforeHisOrHerTurn
 
 	| theGame | 
 	
@@ -66,8 +66,8 @@ test07
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTurnoIncorrecto .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 20:18:03'!
-test08
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:45:51'!
+test08PositionTakenByPlayerTwoIsTaken
 
 	| theGame | 
 	
@@ -76,8 +76,8 @@ test08
 	theGame playerTwoPlacesTokenAt: (1@2).
 	self assert: (theGame positionIsTaken: (1@2)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 20:23:38'!
-test09
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:46:00'!
+test09PositionTakenByPlayerTwoIsTakenByPlayerTwo
 
 	| theGame | 
 	
@@ -499,6 +499,196 @@ test36PlayerOneCannotPlaceATokenOutsideTheBoard
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
 	].
 	self should: [theGame playerOnePlacesTokenAt: (4@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:10:45'!
+test37PlayerTwoCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
+
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+
+	self should: [theGame playerTwoMoves: (1@1) to: (2@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTodaviaNoSeUsaronTodasLasFichas.
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:14:58'!
+test38PlayerTwoCanMoveATokenOnlyIfItsHisTurn
+
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (2@1).
+	theGame playerTwoPlacesTokenAt: (3@3).
+
+	self should: [theGame playerTwoMoves: (1@1) to: (2@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTurnoIncorrecto .
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:17:43'!
+test39PlayerTwoCanMoveAToken
+
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).	
+	theGame playerOneMoves: (1@1) to: (2@1).
+	theGame playerTwoMoves: (2@3) to: (3@3).
+
+	self assert: (theGame positionIsTakenByPlayerTwo: (3@3)).
+	self deny: (theGame positionIsTakenByPlayerTwo: (2@3)).! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:21:47'!
+test40PlayerTwoCanMoveATokenOnlyIfHeOwnsTheToken
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOneMoves: (1@1) to: (2@1).
+
+	self should: [theGame playerTwoMoves: (2@1) to: (1@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+	].
+1! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:23:08'!
+test41PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsFree
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOneMoves: (1@1) to: (2@1).
+	
+	self should: [theGame playerTwoMoves: (2@3) to: (3@2)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:29:49'!
+test42PlayerTwoCanWinByMovingAToken
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@1).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOnePlacesTokenAt: (3@2).
+	theGame playerTwoPlacesTokenAt: (3@3).
+	
+	theGame playerOneMoves: (2@1) to: (3@1).
+	theGame playerTwoMoves: (1@2) to: (1@3).
+		
+	self assert: theGame playerTwoWon.! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:34:28'!
+test43PlayerTwoCannotAddATokenIfTheGameIsOver
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (2@1).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@2).
+	theGame playerOnePlacesTokenAt: (1@2).
+
+	self should: [theGame playerTwoPlacesTokenAt: (3@3).] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
+	].! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:36:43'!
+test44PlayerTwoCannotMoveATokenIfTheGameIsOver
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@1).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOnePlacesTokenAt: (3@2).
+	theGame playerTwoPlacesTokenAt: (3@3).	
+	theGame playerOneMoves: (3@2) to: (3@1).
+
+	self should: [theGame playerTwoMoves: (1@1) to: (1@2).] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
+	].! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:38:36'!
+test45PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOneMoves: (1@1) to: (2@1).
+	
+	self should: [theGame playerTwoMoves: (1@1) to: (-1@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:39:55'!
+test46PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsReachable
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+
+	theGame playerOneMoves: (1@1) to: (2@1).
+	
+	self should: [theGame playerTwoMoves: (1@2) to: (3@3)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+	].
+! !
+
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:41:57'!
+test47PlayerTwoCannotPlaceATokenOutsideTheBoard
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	
+	theGame playerOnePlacesTokenAt: (1@1).
+	self should: [theGame playerTwoPlacesTokenAt: (-1@1)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+	].
+	self should: [theGame playerTwoPlacesTokenAt: (4@1)] raise: Error withExceptionDo: [ :anError|
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
 	].
 ! !
