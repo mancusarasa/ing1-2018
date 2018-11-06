@@ -297,7 +297,7 @@ test23PlayerOneCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:38:41'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:51:16'!
 test24PlayerOneCanMoveATokenOnlyIfItsHisTurn
 
 	| theGame | 
@@ -307,9 +307,11 @@ test24PlayerOneCanMoveATokenOnlyIfItsHisTurn
 	theGame playerTwoPlacesTokenAt: (1@2).
 	theGame playerOnePlacesTokenAt: (2@2).
 	theGame playerTwoPlacesTokenAt: (3@2).
-	theGame playerOnePlacesTokenAt: (3@3).
+	theGame playerOnePlacesTokenAt: (3@1).
+	theGame playerTwoPlacesTokenAt: (3@3).
+	theGame playerOneMoves: (1@1) to: (2@1).
 	
-	self should: [theGame playerOneMoves: (1@1) to: (2@1)] raise: Error withExceptionDo: [ :anError|
+	self should: [theGame playerOneMoves: (2@1) to: (1@1)] raise: Error withExceptionDo: [ :anError|
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTurnoIncorrecto .
 	].
 ! !
@@ -503,7 +505,7 @@ test36PlayerOneCannotPlaceATokenOutsideTheBoard
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:10:45'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:54:09'!
 test37PlayerTwoCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 
 	| theGame | 
@@ -513,6 +515,7 @@ test37PlayerTwoCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 	theGame playerTwoPlacesTokenAt: (1@2).
 	theGame playerOnePlacesTokenAt: (2@2).
 	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
 
 	self should: [theGame playerTwoMoves: (1@1) to: (2@1)] raise: Error withExceptionDo: [ :anError|
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTodaviaNoSeUsaronTodasLasFichas.
@@ -641,7 +644,7 @@ test44PlayerTwoCannotMoveATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:38:36'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:44:20'!
 test45PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	| theGame | 
 	
@@ -654,8 +657,8 @@ test45PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	theGame playerTwoPlacesTokenAt: (2@3).
 	theGame playerOneMoves: (1@1) to: (2@1).
 	
-	self should: [theGame playerTwoMoves: (1@1) to: (-1@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+	self should: [theGame playerTwoMoves: (1@2) to: (-1@2)] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero.
 	].
 ! !
 

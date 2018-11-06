@@ -316,6 +316,94 @@ matches: aPosition
 	^ (self positionIsInsideTheBoard: aPosition) not! !
 
 
+!classDefinition: #PositionTakenByPlayer category: #TerniLapilli!
+Object subclass: #PositionTakenByPlayer
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PositionTakenByPlayer methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:34:07'!
+assertPositionIsTakenByPlayerOne
+
+	^ self subclassResponsibility ! !
+
+!PositionTakenByPlayer methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:34:11'!
+assertPositionIsTakenByPlayerTwo
+
+	^ self subclassResponsibility ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PositionTakenByPlayer class' category: #TerniLapilli!
+PositionTakenByPlayer class
+	instanceVariableNames: ''!
+
+!PositionTakenByPlayer class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:09'!
+matches: aTerniLapilli and: aPosition
+
+	^ self subclassResponsibility ! !
+
+!PositionTakenByPlayer class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:38:00'!
+with: aTerniLapilli and: aPosition
+
+	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aTerniLapilli and: aPosition]) new! !
+
+
+!classDefinition: #PositionTakenByPlayerOne category: #TerniLapilli!
+PositionTakenByPlayer subclass: #PositionTakenByPlayerOne
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PositionTakenByPlayerOne methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:34:48'!
+assertPositionIsTakenByPlayerOne! !
+
+!PositionTakenByPlayerOne methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:35:58'!
+assertPositionIsTakenByPlayerTwo
+
+	^ self error: TerniLapilli mensajeDeErrorMovimientoInvalido ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PositionTakenByPlayerOne class' category: #TerniLapilli!
+PositionTakenByPlayerOne class
+	instanceVariableNames: ''!
+
+!PositionTakenByPlayerOne class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:31'!
+matches: aTerniLapilli and: aPosition
+
+	^ aTerniLapilli positionIsTakenByPlayerOne: aPosition! !
+
+
+!classDefinition: #PositionTakenByPlayerTwo category: #TerniLapilli!
+PositionTakenByPlayer subclass: #PositionTakenByPlayerTwo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PositionTakenByPlayerTwo methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:36:06'!
+assertPositionIsTakenByPlayerOne
+
+	^ self error: TerniLapilli mensajeDeErrorMovimientoInvalido ! !
+
+!PositionTakenByPlayerTwo methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:34:55'!
+assertPositionIsTakenByPlayerTwo! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PositionTakenByPlayerTwo class' category: #TerniLapilli!
+PositionTakenByPlayerTwo class
+	instanceVariableNames: ''!
+
+!PositionTakenByPlayerTwo class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:39'!
+matches: aTerniLapilli and: aPosition
+
+	^ aTerniLapilli positionIsTakenByPlayerTwo: aPosition! !
+
+
 !classDefinition: #PositionTakenStatus category: #TerniLapilli!
 Object subclass: #PositionTakenStatus
 	instanceVariableNames: ''
@@ -406,13 +494,13 @@ initialize
 	turn := PlayerOneTurn new.! !
 
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:25:09'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:47:35'!
 playerOneMoves: currentPosition to: newPosition.
 	
+	(GameEndingStatus with: self) assertNotOver.
 	turn assertPlayerOneCanPlay.
 	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
-	(GameEndingStatus with: self) assertNotOver.
-	(self positionIsTakenByPlayerOne: currentPosition) ifFalse: [^self error: self class mensajeDeErrorMovimientoInvalido].
+	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerOne.
 	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
 	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
@@ -421,25 +509,25 @@ playerOneMoves: currentPosition to: newPosition.
 	playerOneTakenPositions remove: currentPosition.
 	playerOneTakenPositions add: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:22:51'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:48:24'!
 playerOnePlacesTokenAt: aPosition 
 	
 	(GameEndingStatus with: self) assertNotOver.
-	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
 	turn assertPlayerOneCanPlay.
+	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
 	(PositionInTheBoard with: aPosition) assertPositionInsideTheBoard.
 	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
 
 	turn := PlayerTwoTurn new.
 	playerOneTakenPositions add: aPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:23:30'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:46:08'!
 playerTwoMoves: currentPosition to: newPosition.
 	
-	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
-	turn assertPlayerTwoCanPlay.
 	(GameEndingStatus with: self) assertNotOver.
-	(self positionIsTakenByPlayerTwo: currentPosition) ifFalse: [^self error: self class mensajeDeErrorMovimientoInvalido].
+	turn assertPlayerTwoCanPlay.
+	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
+	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerTwo.
 	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
 	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
@@ -448,12 +536,12 @@ playerTwoMoves: currentPosition to: newPosition.
 	playerTwoTakenPositions remove: currentPosition.
 	playerTwoTakenPositions add: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:25:53'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:48:34'!
 playerTwoPlacesTokenAt: aPosition
 	
 	(GameEndingStatus with: self) assertNotOver.
-	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
 	turn assertPlayerTwoCanPlay.
+	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
 	(PositionInTheBoard with: aPosition) assertPositionInsideTheBoard.
 	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
 
