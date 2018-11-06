@@ -349,7 +349,7 @@ test26PlayerOneCanMoveATokenOnlyIfHeOwnsTheToken
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:44:47'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:07:12'!
 test27PlayerOneCanMoveATokenOnlyIfTheNewPositionIsFree
 	| theGame | 
 	
@@ -362,7 +362,7 @@ test27PlayerOneCanMoveATokenOnlyIfTheNewPositionIsFree
 	theGame playerTwoPlacesTokenAt: (2@3).
 	
 	self should: [theGame playerOneMoves: (1@1) to: (1@2)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionTomada.
 	].
 ! !
 
@@ -455,7 +455,7 @@ test33PlayerOneCannotMoveATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:57:05'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:36'!
 test34PlayerOneCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	| theGame | 
 	
@@ -468,7 +468,7 @@ test34PlayerOneCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	theGame playerTwoPlacesTokenAt: (2@3).
 	
 	self should: [theGame playerOneMoves: (1@1) to: (-1@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero.
 	].
 ! !
 
@@ -489,17 +489,17 @@ test35PlayerOneCanMoveATokenOnlyIfTheNewPositionIsReachable
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 15:20:02'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:46'!
 test36PlayerOneCannotPlaceATokenOutsideTheBoard
 	| theGame | 
 	
 	theGame := TerniLapilli new.
 	
 	self should: [theGame playerOnePlacesTokenAt: (-1@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero .
 	].
 	self should: [theGame playerOnePlacesTokenAt: (4@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero .
 	].
 ! !
 
@@ -573,7 +573,7 @@ test40PlayerTwoCanMoveATokenOnlyIfHeOwnsTheToken
 	].
 1! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:23:08'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:08:22'!
 test41PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsFree
 	| theGame | 
 	
@@ -587,7 +587,7 @@ test41PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsFree
 	theGame playerOneMoves: (1@1) to: (2@1).
 	
 	self should: [theGame playerTwoMoves: (2@3) to: (3@2)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorMovimientoInvalido .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionTomada.
 	].
 ! !
 
@@ -678,7 +678,7 @@ test46PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsReachable
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:41:57'!
+!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:52'!
 test47PlayerTwoCannotPlaceATokenOutsideTheBoard
 	| theGame | 
 	
@@ -686,9 +686,9 @@ test47PlayerTwoCannotPlaceATokenOutsideTheBoard
 	
 	theGame playerOnePlacesTokenAt: (1@1).
 	self should: [theGame playerTwoPlacesTokenAt: (-1@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero .
 	].
 	self should: [theGame playerTwoPlacesTokenAt: (4@1)] raise: Error withExceptionDo: [ :anError|
-		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionInvalida .
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero .
 	].
 ! !
