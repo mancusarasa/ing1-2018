@@ -569,7 +569,7 @@ initialize
 	turn := PlayerOneTurn new.! !
 
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:08:44'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:22:44'!
 playerOneMoves: currentPosition to: newPosition.
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -582,10 +582,9 @@ playerOneMoves: currentPosition to: newPosition.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
 
 	turn := PlayerTwoTurn new.
-	playerOneTakenPositions remove: currentPosition.
-	playerOneTakenPositions add: newPosition.! !
+	self executeMoveByPlayerOneFrom: currentPosition to: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:48:24'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:25:40'!
 playerOnePlacesTokenAt: aPosition 
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -595,9 +594,9 @@ playerOnePlacesTokenAt: aPosition
 	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
 
 	turn := PlayerTwoTurn new.
-	playerOneTakenPositions add: aPosition.! !
+	self markPositionAsTakenByPlayerOne: aPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:09:42'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:20:19'!
 playerTwoMoves: currentPosition to: newPosition.
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -610,10 +609,9 @@ playerTwoMoves: currentPosition to: newPosition.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
 
 	turn := PlayerOneTurn new.
-	playerTwoTakenPositions remove: currentPosition.
-	playerTwoTakenPositions add: newPosition.! !
+	self executeMoveByPlayerTwoFrom: currentPosition to: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:48:34'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:26:17'!
 playerTwoPlacesTokenAt: aPosition
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -623,7 +621,7 @@ playerTwoPlacesTokenAt: aPosition
 	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
 
 	turn := PlayerOneTurn new.
-	playerTwoTakenPositions add: aPosition.! !
+	self markPositionAsTakenByPlayerTwo: aPosition.! !
 
 
 !TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/1/2018 20:01:37'!
@@ -635,8 +633,9 @@ began
 isOver
 	 ^ self playerOneWon or: [self playerTwoWon]! !
 
-!TerniLapilli methodsFor: 'observadores' stamp: 'd 11/4/2018 12:10:25'!
+!TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/7/2018 19:27:10'!
 playerOneWon
+
 	 #(1,2,3) do:[:index | ((playerOneTakenPositions select: [:e| (e y) = index]) size = 3) ifTrue:[^true]].
 	 #(1,2,3) do:[:index | ((playerOneTakenPositions select: [:e| (e x) = index]) size = 3) ifTrue:[^true]].
 	 ((playerOneTakenPositions select: [:e| (e x) = (e y)]) size = 3) ifTrue:[^true].
@@ -644,8 +643,9 @@ playerOneWon
 	 ^false.
 		! !
 
-!TerniLapilli methodsFor: 'observadores' stamp: 'd 11/4/2018 12:27:29'!
+!TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/7/2018 19:27:13'!
 playerTwoWon
+
 	 #(1,2,3) do:[:index | ((playerTwoTakenPositions select: [:e| (e y) = index]) size = 3) ifTrue:[^true]].
 	 #(1,2,3) do:[:index | ((playerTwoTakenPositions select: [:e| (e x) = index]) size = 3) ifTrue:[^true]].
 	 ((playerTwoTakenPositions select: [:e| (e x) = (e y)]) size = 3) ifTrue:[^true].
@@ -677,6 +677,29 @@ positionsTakenByPlayerOne
 positionsTakenByPlayerTwo
 
 	^ playerTwoTakenPositions copy! !
+
+
+!TerniLapilli methodsFor: 'privados' stamp: 'ps 11/7/2018 19:19:50'!
+executeMoveByPlayerOneFrom: currentPosition to: newPosition
+
+	playerOneTakenPositions remove: currentPosition.
+	playerOneTakenPositions add: newPosition.! !
+
+!TerniLapilli methodsFor: 'privados' stamp: 'ps 11/7/2018 19:19:47'!
+executeMoveByPlayerTwoFrom: currentPosition to: newPosition
+
+	playerTwoTakenPositions remove: currentPosition.
+	playerTwoTakenPositions add: newPosition.! !
+
+!TerniLapilli methodsFor: 'privados' stamp: 'ps 11/7/2018 19:25:50'!
+markPositionAsTakenByPlayerOne: aPosition
+
+	playerOneTakenPositions add: aPosition! !
+
+!TerniLapilli methodsFor: 'privados' stamp: 'ps 11/7/2018 19:26:01'!
+markPositionAsTakenByPlayerTwo: aPosition
+
+	playerTwoTakenPositions add: aPosition! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
