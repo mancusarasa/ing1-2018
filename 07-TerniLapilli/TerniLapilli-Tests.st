@@ -5,7 +5,7 @@ TestCase subclass: #TerniLapilliTest
 	poolDictionaries: ''
 	category: 'TerniLapilli-Tests'!
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:03'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:43:03'!
 test01NewGameDidntBegin
 
 	| theGame | 
@@ -13,7 +13,7 @@ test01NewGameDidntBegin
 	theGame := TerniLapilli new.
 	self deny: (theGame began).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:26'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:43:26'!
 test02PlacingTokensBeginsTheGame
 
 	| theGame | 
@@ -22,7 +22,7 @@ test02PlacingTokensBeginsTheGame
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame began).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:47'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:43:47'!
 test03NonTakenPositionIsFree
 
 	| theGame | 
@@ -30,7 +30,7 @@ test03NonTakenPositionIsFree
 	theGame := TerniLapilli new.
 	self deny: (theGame positionIsTaken: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:43:58'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:43:58'!
 test04TakenPositionIsNotFree
 
 	| theGame | 
@@ -39,7 +39,7 @@ test04TakenPositionIsNotFree
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame positionIsTaken: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:44:29'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:44:29'!
 test05NonTakenPositionIsntTakenByPlayerOne
 
 	| theGame | 
@@ -47,7 +47,7 @@ test05NonTakenPositionIsntTakenByPlayerOne
 	theGame := TerniLapilli new.
 	self deny: (theGame positionIsTakenByPlayerOne: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:44:58'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:44:58'!
 test06PositionTakenByPlayerOneIsTakenByPlayerOne
 
 	| theGame | 
@@ -56,7 +56,7 @@ test06PositionTakenByPlayerOneIsTakenByPlayerOne
 	theGame playerOnePlacesTokenAt: (1@1).
 	self assert: (theGame positionIsTakenByPlayerOne: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:45:27'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:45:27'!
 test07PlayerTwoCantPlaceTokenBeforeHisOrHerTurn
 
 	| theGame | 
@@ -66,7 +66,7 @@ test07PlayerTwoCantPlaceTokenBeforeHisOrHerTurn
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorTurnoIncorrecto .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:45:51'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:45:51'!
 test08PositionTakenByPlayerTwoIsTaken
 
 	| theGame | 
@@ -76,7 +76,7 @@ test08PositionTakenByPlayerTwoIsTaken
 	theGame playerTwoPlacesTokenAt: (1@2).
 	self assert: (theGame positionIsTaken: (1@2)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:46:00'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:46:00'!
 test09PositionTakenByPlayerTwoIsTakenByPlayerTwo
 
 	| theGame | 
@@ -86,7 +86,7 @@ test09PositionTakenByPlayerTwoIsTakenByPlayerTwo
 	theGame playerTwoPlacesTokenAt: (1@2).
 	self assert: (theGame positionIsTakenByPlayerTwo: (1@2)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 20:28:52'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/1/2018 20:28:52'!
 test10PlayerTwoShouldntBeAbleToPlaceTokenOnPositionAlreadyTaken
 
 	| theGame | 
@@ -98,7 +98,7 @@ test10PlayerTwoShouldntBeAbleToPlaceTokenOnPositionAlreadyTaken
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionTomada.
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/1/2018 20:30:52'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/1/2018 20:30:52'!
 test11PlayerOneShouldntBeAbleToPlaceTokenOnPositionAlreadyTaken
 
 	| theGame | 
@@ -111,7 +111,7 @@ test11PlayerOneShouldntBeAbleToPlaceTokenOnPositionAlreadyTaken
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionTomada.
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 11:26:35'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 11:26:35'!
 test12PlayerOneCannotPlayMoreThanThreeTokens
 
 	| theGame | 
@@ -129,7 +129,7 @@ test12PlayerOneCannotPlayMoreThanThreeTokens
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorCantidadDeFichasExcedida.
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:04:36'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:04:36'!
 test13PlayerOneDidntWin
 
 	| theGame | 
@@ -144,7 +144,7 @@ test13PlayerOneDidntWin
 	self deny: theGame playerOneWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:02:00'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:02:00'!
 test14PlayerOneCanWinHorizontally
 
 	| theGame | 
@@ -159,7 +159,7 @@ test14PlayerOneCanWinHorizontally
 	self assert: theGame playerOneWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:02:14'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:02:14'!
 test15PlayerOneCanWinVertically
 
 	| theGame | 
@@ -174,7 +174,7 @@ test15PlayerOneCanWinVertically
 	self assert: theGame playerOneWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:05:53'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:05:53'!
 test16PlayerOneCanWinDiagonally
 
 	| theGame | 
@@ -189,7 +189,7 @@ test16PlayerOneCanWinDiagonally
 	self assert: theGame playerOneWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:37:43'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:37:43'!
 test17PlayerOneCanWinDiagonally2
 
 	| theGame | 
@@ -204,7 +204,7 @@ test17PlayerOneCanWinDiagonally2
 	self assert: theGame playerOneWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:25:25'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:25:25'!
 test18PlayerTwoDidntWin
 
 	| theGame | 
@@ -219,7 +219,7 @@ test18PlayerTwoDidntWin
 	self deny: theGame playerTwoWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:29:32'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:29:32'!
 test19PlayerTwoCanWinHorizontally
 
 	| theGame | 
@@ -235,7 +235,7 @@ test19PlayerTwoCanWinHorizontally
 	self assert: theGame playerTwoWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:38:03'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:38:03'!
 test20PlayerTwoCanWinVertically
 
 	| theGame | 
@@ -251,7 +251,7 @@ test20PlayerTwoCanWinVertically
 	self assert: theGame playerTwoWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:34:33'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 13:34:33'!
 test21PlayerTwoCanWinDiagonally
 
 	| theGame | 
@@ -266,7 +266,7 @@ test21PlayerTwoCanWinDiagonally
 	self assert: theGame playerTwoWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 12:49:06'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 12:49:06'!
 test22PlayerTwoCanWinDiagonally2
 
 	| theGame | 
@@ -281,7 +281,7 @@ test22PlayerTwoCanWinDiagonally2
 	self assert: theGame playerTwoWon. 
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:35:07'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 13:35:07'!
 test23PlayerOneCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 
 	| theGame | 
@@ -297,7 +297,7 @@ test23PlayerOneCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:51:16'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 21:51:16'!
 test24PlayerOneCanMoveATokenOnlyIfItsHisTurn
 
 	| theGame | 
@@ -316,7 +316,7 @@ test24PlayerOneCanMoveATokenOnlyIfItsHisTurn
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:38:47'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 13:38:47'!
 test25PlayerOneCanMoveAToken
 
 	| theGame | 
@@ -334,7 +334,7 @@ test25PlayerOneCanMoveAToken
 	self assert: (theGame positionIsTakenByPlayerOne: (2@1)).
 	self deny: (theGame positionIsTakenByPlayerOne: (1@1)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 13:42:16'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 13:42:16'!
 test26PlayerOneCanMoveATokenOnlyIfHeOwnsTheToken
 	| theGame | 
 	
@@ -351,7 +351,7 @@ test26PlayerOneCanMoveATokenOnlyIfHeOwnsTheToken
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:07:12'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 21:07:12'!
 test27PlayerOneCanMoveATokenOnlyIfTheNewPositionIsFree
 	| theGame | 
 	
@@ -368,7 +368,7 @@ test27PlayerOneCanMoveATokenOnlyIfTheNewPositionIsFree
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:08:15'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:08:15'!
 test28PlayerOneCanWinByMovingAToken
 	| theGame | 
 	
@@ -383,7 +383,7 @@ test28PlayerOneCanWinByMovingAToken
 	theGame playerOneMoves: (3@2) to: (3@1).
 	self assert: theGame playerOneWon.! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:08:12'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:08:12'!
 test29TheGameIsntOverIfNobodyWon
 	| theGame | 
 	
@@ -393,7 +393,7 @@ test29TheGameIsntOverIfNobodyWon
 
 	self deny: theGame isOver.! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:08:09'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:08:09'!
 test30TheGameIsOverIfPlayerOneWon
 	| theGame | 
 	
@@ -407,7 +407,7 @@ test30TheGameIsOverIfPlayerOneWon
 
 	self assert: theGame isOver.! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:08:06'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:08:06'!
 test31TheGameIsOverIfPlayerTwoWon
 	| theGame | 
 	
@@ -423,7 +423,7 @@ test31TheGameIsOverIfPlayerTwoWon
 	self assert: theGame isOver.
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:10:19'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:10:19'!
 test32PlayerOneCannotAddATokenIfTheGameIsOver
 	| theGame | 
 	
@@ -440,7 +440,7 @@ test32PlayerOneCannotAddATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 14:12:32'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 14:12:32'!
 test33PlayerOneCannotMoveATokenIfTheGameIsOver
 	| theGame | 
 	
@@ -457,7 +457,7 @@ test33PlayerOneCannotMoveATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:36'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 20:49:36'!
 test34PlayerOneCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	| theGame | 
 	
@@ -474,7 +474,7 @@ test34PlayerOneCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'd 11/4/2018 15:07:09'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'd 11/4/2018 15:07:09'!
 test35PlayerOneCanMoveATokenOnlyIfTheNewPositionIsReachable
 	| theGame | 
 	
@@ -491,7 +491,7 @@ test35PlayerOneCanMoveATokenOnlyIfTheNewPositionIsReachable
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:46'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 20:49:46'!
 test36PlayerOneCannotPlaceATokenOutsideTheBoard
 	| theGame | 
 	
@@ -505,7 +505,7 @@ test36PlayerOneCannotPlaceATokenOutsideTheBoard
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:54:09'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 21:54:09'!
 test37PlayerTwoCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 
 	| theGame | 
@@ -522,7 +522,7 @@ test37PlayerTwoCanMoveATokenOnlyIfAllTokensHaveBeenPlayed
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:14:58'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:14:58'!
 test38PlayerTwoCanMoveATokenOnlyIfItsHisTurn
 
 	| theGame | 
@@ -540,7 +540,7 @@ test38PlayerTwoCanMoveATokenOnlyIfItsHisTurn
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:17:43'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:17:43'!
 test39PlayerTwoCanMoveAToken
 
 	| theGame | 
@@ -558,7 +558,7 @@ test39PlayerTwoCanMoveAToken
 	self assert: (theGame positionIsTakenByPlayerTwo: (3@3)).
 	self deny: (theGame positionIsTakenByPlayerTwo: (2@3)).! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:21:47'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:21:47'!
 test40PlayerTwoCanMoveATokenOnlyIfHeOwnsTheToken
 	| theGame | 
 	
@@ -576,7 +576,7 @@ test40PlayerTwoCanMoveATokenOnlyIfHeOwnsTheToken
 	].
 1! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:08:22'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 21:08:22'!
 test41PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsFree
 	| theGame | 
 	
@@ -594,7 +594,7 @@ test41PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsFree
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:29:49'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:29:49'!
 test42PlayerTwoCanWinByMovingAToken
 	| theGame | 
 	
@@ -611,7 +611,7 @@ test42PlayerTwoCanWinByMovingAToken
 		
 	self assert: theGame playerTwoWon.! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:34:28'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:34:28'!
 test43PlayerTwoCannotAddATokenIfTheGameIsOver
 	| theGame | 
 	
@@ -627,7 +627,7 @@ test43PlayerTwoCannotAddATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:36:43'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:36:43'!
 test44PlayerTwoCannotMoveATokenIfTheGameIsOver
 	| theGame | 
 	
@@ -644,7 +644,7 @@ test44PlayerTwoCannotMoveATokenIfTheGameIsOver
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorJuegoFinalizado .
 	].! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:44:20'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 21:44:20'!
 test45PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	| theGame | 
 	
@@ -662,7 +662,7 @@ test45PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsInTheBoard
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 17:39:55'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 17:39:55'!
 test46PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsReachable
 	| theGame | 
 	
@@ -681,7 +681,7 @@ test46PlayerTwoCanMoveATokenOnlyIfTheNewPositionIsReachable
 	].
 ! !
 
-!TerniLapilliTest methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:49:52'!
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/5/2018 20:49:52'!
 test47PlayerTwoCannotPlaceATokenOutsideTheBoard
 	| theGame | 
 	
@@ -695,3 +695,38 @@ test47PlayerTwoCannotPlaceATokenOutsideTheBoard
 		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionFueraDelTablero .
 	].
 ! !
+
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/7/2018 19:12:31'!
+test48PlayerOneCantMakeADummyMove
+
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+
+	self should: [theGame playerOneMoves: (1@1) to: (1@1).] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionesDeOrigenYDestinoIguales.
+	].! !
+
+!TerniLapilliTest methodsFor: 'testing' stamp: 'ps 11/7/2018 19:12:34'!
+test49PlayerTwoCantMakeADummyMove
+
+	| theGame | 
+	
+	theGame := TerniLapilli new.
+	theGame playerOnePlacesTokenAt: (1@1).
+	theGame playerTwoPlacesTokenAt: (1@2).
+	theGame playerOnePlacesTokenAt: (2@2).
+	theGame playerTwoPlacesTokenAt: (3@2).
+	theGame playerOnePlacesTokenAt: (1@3).
+	theGame playerTwoPlacesTokenAt: (2@3).
+	theGame playerOneMoves: (1@1) to: (2@1).	
+
+	self should: [theGame playerTwoMoves: (1@2) to: (1@2).] raise: Error withExceptionDo: [ :anError|
+		self assert: anError messageText equals: TerniLapilli mensajeDeErrorPosicionesDeOrigenYDestinoIguales.
+	].! !

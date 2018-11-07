@@ -16,17 +16,17 @@ assertPositionsAreAdjacent
 AdjacentPositionInTheBoard class
 	instanceVariableNames: ''!
 
-!AdjacentPositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:52:19'!
+!AdjacentPositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:52:19'!
 matches: aPosition and: anotherPosition
 
 	self subclassResponsibility ! !
 
-!AdjacentPositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:55:15'!
+!AdjacentPositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:55:15'!
 position: newPosition isAdjacentTo: currentPosition
 	
 	^ (((newPosition x)-(currentPosition x)) abs < 2) and: [(((newPosition y)-(currentPosition y)) abs < 2)]! !
 
-!AdjacentPositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:52:39'!
+!AdjacentPositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:52:39'!
 with: aPosition and: anotherPosition
 
 	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aPosition and: anotherPosition]) new! !
@@ -48,7 +48,7 @@ assertPositionsAreAdjacent! !
 PositionIsAdjacent class
 	instanceVariableNames: ''!
 
-!PositionIsAdjacent class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:55:43'!
+!PositionIsAdjacent class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:55:43'!
 matches: aPosition and: anotherPosition
 
 	^ super position: aPosition isAdjacentTo: anotherPosition! !
@@ -72,7 +72,7 @@ assertPositionsAreAdjacent
 PositionIsNotAdjacent class
 	instanceVariableNames: ''!
 
-!PositionIsNotAdjacent class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:55:53'!
+!PositionIsNotAdjacent class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:55:53'!
 matches: aPosition and: anotherPosition
 
 	^ (super position: aPosition isAdjacentTo: anotherPosition) not! !
@@ -96,12 +96,12 @@ assertAllTokensWherePlayed
 AmountOfPlayedTokensStatus class
 	instanceVariableNames: ''!
 
-!AmountOfPlayedTokensStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:15:47'!
+!AmountOfPlayedTokensStatus class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:15:47'!
 matches: aTerniLapilli
 
 	^ self subclassResponsibility ! !
 
-!AmountOfPlayedTokensStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:15:32'!
+!AmountOfPlayedTokensStatus class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:15:32'!
 with: aTerniLapilli
 
 	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aTerniLapilli]) new! !
@@ -128,7 +128,7 @@ assertThereAreRemainingTokensToPlay
 AmountReached class
 	instanceVariableNames: ''!
 
-!AmountReached class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:18:01'!
+!AmountReached class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:18:01'!
 matches: aTerniLapilli
 
 	^ ((aTerniLapilli positionsTakenByPlayerTwo size) + (aTerniLapilli positionsTakenByPlayerTwo size)) >= 6! !
@@ -155,10 +155,85 @@ assertThereAreRemainingTokensToPlay! !
 UnplayedTokens class
 	instanceVariableNames: ''!
 
-!UnplayedTokens class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:17:56'!
+!UnplayedTokens class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:17:56'!
 matches: aTerniLapilli
 
 	^ ((aTerniLapilli positionsTakenByPlayerTwo size) + (aTerniLapilli positionsTakenByPlayerTwo size)) < 6! !
+
+
+!classDefinition: #FromAndToPositionsInTheBoard category: #TerniLapilli!
+Object subclass: #FromAndToPositionsInTheBoard
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!FromAndToPositionsInTheBoard methodsFor: 'validation' stamp: 'ps 11/7/2018 19:03:06'!
+assertPositionsAreDifferent
+
+	self subclassResponsibility ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'FromAndToPositionsInTheBoard class' category: #TerniLapilli!
+FromAndToPositionsInTheBoard class
+	instanceVariableNames: ''!
+
+!FromAndToPositionsInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 19:05:09'!
+matches: aPosition and: anotherPosition
+
+	self subclassResponsibility ! !
+
+!FromAndToPositionsInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 19:04:51'!
+with: aPosition and: anotherPosition
+
+	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aPosition and: anotherPosition]) new! !
+
+
+!classDefinition: #DifferentFromAndToPositionsInTheBoard category: #TerniLapilli!
+FromAndToPositionsInTheBoard subclass: #DifferentFromAndToPositionsInTheBoard
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!DifferentFromAndToPositionsInTheBoard methodsFor: 'validation' stamp: 'ps 11/7/2018 19:03:25'!
+assertPositionsAreDifferent! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'DifferentFromAndToPositionsInTheBoard class' category: #TerniLapilli!
+DifferentFromAndToPositionsInTheBoard class
+	instanceVariableNames: ''!
+
+!DifferentFromAndToPositionsInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 19:06:03'!
+matches: aPosition and: anotherPosition
+
+	^ (aPosition = anotherPosition) not! !
+
+
+!classDefinition: #EqualFromAndToPositionsInTheBoard category: #TerniLapilli!
+FromAndToPositionsInTheBoard subclass: #EqualFromAndToPositionsInTheBoard
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!EqualFromAndToPositionsInTheBoard methodsFor: 'validation' stamp: 'ps 11/7/2018 19:12:43'!
+assertPositionsAreDifferent
+
+	^ self error: TerniLapilli mensajeDeErrorPosicionesDeOrigenYDestinoIguales! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'EqualFromAndToPositionsInTheBoard class' category: #TerniLapilli!
+EqualFromAndToPositionsInTheBoard class
+	instanceVariableNames: ''!
+
+!EqualFromAndToPositionsInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 19:06:45'!
+matches: aPosition and: anotherPosition
+
+	^ (aPosition = anotherPosition)! !
 
 
 !classDefinition: #GameEndingStatus category: #TerniLapilli!
@@ -179,15 +254,15 @@ assertNotOver
 GameEndingStatus class
 	instanceVariableNames: ''!
 
-!GameEndingStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:04:50'!
-isOver: aTerniLapilli
+!GameEndingStatus class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 18:52:22'!
+matches: aTerniLapilli
 
 	self subclassResponsibility ! !
 
-!GameEndingStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:05:53'!
+!GameEndingStatus class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 18:52:55'!
 with: aTerniLapilli
 
-	^ (self subclasses detect: [ :aSubClass | aSubClass isOver: aTerniLapilli]) new! !
+	^ (self subclasses detect: [ :aSubClass | aSubClass matches: aTerniLapilli]) new! !
 
 
 !classDefinition: #Over category: #TerniLapilli!
@@ -208,8 +283,8 @@ assertNotOver
 Over class
 	instanceVariableNames: ''!
 
-!Over class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:05:12'!
-isOver: aTerniLapilli
+!Over class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 18:52:32'!
+matches: aTerniLapilli
 
 	^ aTerniLapilli isOver! !
 
@@ -230,8 +305,8 @@ assertNotOver! !
 Playing class
 	instanceVariableNames: ''!
 
-!Playing class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:05:31'!
-isOver: aTerniLapilli
+!Playing class methodsFor: 'instance creation' stamp: 'ps 11/7/2018 18:52:41'!
+matches: aTerniLapilli
 
 	^ aTerniLapilli isOver not! !
 
@@ -254,17 +329,17 @@ assertPositionInsideTheBoard
 PositionInTheBoard class
 	instanceVariableNames: ''!
 
-!PositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:42:46'!
+!PositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:42:46'!
 matches: aPosition
 
 	^ self subclassResponsibility! !
 
-!PositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:36:49'!
+!PositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:36:49'!
 positionIsInsideTheBoard: position 
 
 	^ (((position x) > 0) and: [(position y) > 0]) and: [(((position x) < 4) and: [(position y) < 4])]! !
 
-!PositionInTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:42:15'!
+!PositionInTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:42:15'!
 with: aPosition
 
 	^ (self subclasses detect:[ :aSubclass | aSubclass matches: aPosition]) new! !
@@ -286,7 +361,7 @@ assertPositionInsideTheBoard! !
 PositionInsideTheBoard class
 	instanceVariableNames: ''!
 
-!PositionInsideTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:43:02'!
+!PositionInsideTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:43:02'!
 matches: aPosition
 
 	^ self positionIsInsideTheBoard: aPosition ! !
@@ -310,7 +385,7 @@ assertPositionInsideTheBoard
 PositionOutsideTheBoard class
 	instanceVariableNames: ''!
 
-!PositionOutsideTheBoard class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 20:43:28'!
+!PositionOutsideTheBoard class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 20:43:28'!
 matches: aPosition
 
 	^ (self positionIsInsideTheBoard: aPosition) not! !
@@ -339,12 +414,12 @@ assertPositionIsTakenByPlayerTwo
 PositionTakenByPlayer class
 	instanceVariableNames: ''!
 
-!PositionTakenByPlayer class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:09'!
+!PositionTakenByPlayer class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:33:09'!
 matches: aTerniLapilli and: aPosition
 
 	^ self subclassResponsibility ! !
 
-!PositionTakenByPlayer class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:38:00'!
+!PositionTakenByPlayer class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:38:00'!
 with: aTerniLapilli and: aPosition
 
 	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aTerniLapilli and: aPosition]) new! !
@@ -371,7 +446,7 @@ assertPositionIsTakenByPlayerTwo
 PositionTakenByPlayerOne class
 	instanceVariableNames: ''!
 
-!PositionTakenByPlayerOne class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:31'!
+!PositionTakenByPlayerOne class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:33:31'!
 matches: aTerniLapilli and: aPosition
 
 	^ aTerniLapilli positionIsTakenByPlayerOne: aPosition! !
@@ -398,7 +473,7 @@ assertPositionIsTakenByPlayerTwo! !
 PositionTakenByPlayerTwo class
 	instanceVariableNames: ''!
 
-!PositionTakenByPlayerTwo class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:33:39'!
+!PositionTakenByPlayerTwo class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:33:39'!
 matches: aTerniLapilli and: aPosition
 
 	^ aTerniLapilli positionIsTakenByPlayerTwo: aPosition! !
@@ -422,12 +497,12 @@ assertPositionNonTaken
 PositionTakenStatus class
 	instanceVariableNames: ''!
 
-!PositionTakenStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:00:55'!
+!PositionTakenStatus class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:00:55'!
 matches: aTerniLapilli and: aPosition
 
 	^ self subclassResponsibility! !
 
-!PositionTakenStatus class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:01:09'!
+!PositionTakenStatus class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:01:09'!
 with: aTerniLapilli and: aPosition
 
 	^ (self subclasses detect: [ :aSubclass | aSubclass matches: aTerniLapilli and: aPosition]) new! !
@@ -449,7 +524,7 @@ assertPositionNonTaken! !
 NonTakenPosition class
 	instanceVariableNames: ''!
 
-!NonTakenPosition class methodsFor: 'as yet unclassified' stamp: 'ps 11/5/2018 21:01:54'!
+!NonTakenPosition class methodsFor: 'instance creation' stamp: 'ps 11/5/2018 21:01:54'!
 matches: aTerniLapilli and: aPosition
 
 	^ (aTerniLapilli positionIsTaken: aPosition) not! !
@@ -494,7 +569,7 @@ initialize
 	turn := PlayerOneTurn new.! !
 
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:47:35'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:08:44'!
 playerOneMoves: currentPosition to: newPosition.
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -502,6 +577,7 @@ playerOneMoves: currentPosition to: newPosition.
 	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
 	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerOne.
 	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
+	(FromAndToPositionsInTheBoard with: currentPosition and: newPosition) assertPositionsAreDifferent.
 	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
 
@@ -521,7 +597,7 @@ playerOnePlacesTokenAt: aPosition
 	turn := PlayerTwoTurn new.
 	playerOneTakenPositions add: aPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/5/2018 21:46:08'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:09:42'!
 playerTwoMoves: currentPosition to: newPosition.
 	
 	(GameEndingStatus with: self) assertNotOver.
@@ -529,6 +605,7 @@ playerTwoMoves: currentPosition to: newPosition.
 	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
 	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerTwo.
 	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
+	(FromAndToPositionsInTheBoard with: currentPosition and: newPosition) assertPositionsAreDifferent.
 	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
 	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
 
@@ -636,6 +713,11 @@ mensajeDeErrorPosicionInvalida
 mensajeDeErrorPosicionTomada
 
 	^ 'laPosicionYaEstabaTomada'! !
+
+!TerniLapilli class methodsFor: 'mensajes de error' stamp: 'ps 11/7/2018 19:12:06'!
+mensajeDeErrorPosicionesDeOrigenYDestinoIguales
+
+	^ 'lasPosicionesDeOrigenYDestinoSonIguales'! !
 
 !TerniLapilli class methodsFor: 'mensajes de error' stamp: 'd 11/4/2018 13:33:26'!
 mensajeDeErrorTodaviaNoSeUsaronTodasLasFichas
