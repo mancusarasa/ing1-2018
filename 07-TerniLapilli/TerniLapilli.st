@@ -311,6 +311,87 @@ matches: aTerniLapilli
 	^ aTerniLapilli isOver not! !
 
 
+!classDefinition: #PlayValidator category: #TerniLapilli!
+Object subclass: #PlayValidator
+	instanceVariableNames: 'terniLapilli'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PlayValidator methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 13:55:05'!
+initializeWith: aTerniLapili
+	
+	terniLapilli := aTerniLapili .! !
+
+!PlayValidator methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 14:13:30'!
+validateMovementFrom: oldPosition to: newPosition onTurn: aTurn
+
+	(GameEndingStatus with: terniLapilli) assertNotOver.
+	aTurn perform: ('assert', self class player, 'CanPlay') asSymbol.
+	(AmountOfPlayedTokensStatus with: terniLapilli) assertAllTokensWherePlayed.
+	(PositionTakenByPlayer with: terniLapilli and: oldPosition) perform: ('assertPositionIsTakenBy', self class player) asSymbol.
+	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
+	(FromAndToPositionsInTheBoard with: oldPosition and: newPosition) assertPositionsAreDifferent.
+	(AdjacentPositionInTheBoard with: newPosition and: oldPosition) assertPositionsAreAdjacent.
+	(PositionTakenStatus with: terniLapilli and: newPosition) assertPositionNonTaken.! !
+
+!PlayValidator methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 14:14:41'!
+validateTokenPlacementAt: aPosition  onTurn: aTurn.
+
+	(GameEndingStatus with: terniLapilli ) assertNotOver.
+	aTurn perform: ('assert', self class player, 'CanPlay') asSymbol.
+	(AmountOfPlayedTokensStatus with: terniLapilli ) assertThereAreRemainingTokensToPlay.
+	(PositionInTheBoard with: aPosition) assertPositionInsideTheBoard.
+	(PositionTakenStatus with: terniLapilli and: aPosition) assertPositionNonTaken.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PlayValidator class' category: #TerniLapilli!
+PlayValidator class
+	instanceVariableNames: ''!
+
+!PlayValidator class methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 13:56:33'!
+for: aTerniLapilli
+
+	^ self new initializeWith: aTerniLapilli .! !
+
+
+!classDefinition: #PlayerOnePlayValidator category: #TerniLapilli!
+PlayValidator subclass: #PlayerOnePlayValidator
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PlayerOnePlayValidator class' category: #TerniLapilli!
+PlayerOnePlayValidator class
+	instanceVariableNames: ''!
+
+!PlayerOnePlayValidator class methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 14:09:26'!
+player
+	^ 'PlayerOne'! !
+
+
+!classDefinition: #PlayerTwoPlayValidator category: #TerniLapilli!
+PlayValidator subclass: #PlayerTwoPlayValidator
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PlayerTwoPlayValidator class' category: #TerniLapilli!
+PlayerTwoPlayValidator class
+	instanceVariableNames: ''!
+
+!PlayerTwoPlayValidator class methodsFor: 'as yet unclassified' stamp: 'd 11/8/2018 14:09:46'!
+player
+	^ 'PlayerTwo'! !
+
+
 !classDefinition: #PositionInTheBoard category: #TerniLapilli!
 Object subclass: #PositionInTheBoard
 	instanceVariableNames: ''
@@ -569,56 +650,34 @@ initialize
 	turn := PlayerOneTurn new.! !
 
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:22:44'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'd 11/8/2018 14:12:50'!
 playerOneMoves: currentPosition to: newPosition.
 	
-	(GameEndingStatus with: self) assertNotOver.
-	turn assertPlayerOneCanPlay.
-	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
-	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerOne.
-	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
-	(FromAndToPositionsInTheBoard with: currentPosition and: newPosition) assertPositionsAreDifferent.
-	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
-	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
-
+	(PlayerOnePlayValidator for: self) validateMovementFrom: currentPosition to: newPosition  onTurn: turn.
+	
 	turn := PlayerTwoTurn new.
 	self executeMoveByPlayerOneFrom: currentPosition to: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:25:40'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'd 11/8/2018 14:15:47'!
 playerOnePlacesTokenAt: aPosition 
 	
-	(GameEndingStatus with: self) assertNotOver.
-	turn assertPlayerOneCanPlay.
-	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
-	(PositionInTheBoard with: aPosition) assertPositionInsideTheBoard.
-	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
-
+	(PlayerOnePlayValidator for: self) validateTokenPlacementAt: aPosition  onTurn: turn.
+	
 	turn := PlayerTwoTurn new.
 	self markPositionAsTakenByPlayerOne: aPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:20:19'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'd 11/8/2018 14:15:25'!
 playerTwoMoves: currentPosition to: newPosition.
-	
-	(GameEndingStatus with: self) assertNotOver.
-	turn assertPlayerTwoCanPlay.
-	(AmountOfPlayedTokensStatus with: self) assertAllTokensWherePlayed.
-	(PositionTakenByPlayer with: self and: currentPosition) assertPositionIsTakenByPlayerTwo.
-	(PositionInTheBoard with: newPosition) assertPositionInsideTheBoard.
-	(FromAndToPositionsInTheBoard with: currentPosition and: newPosition) assertPositionsAreDifferent.
-	(AdjacentPositionInTheBoard with: newPosition and: currentPosition) assertPositionsAreAdjacent.
-	(PositionTakenStatus with: self and: newPosition) assertPositionNonTaken.
+
+	(PlayerTwoPlayValidator for: self) validateMovementFrom: currentPosition to: newPosition  onTurn: turn.
 
 	turn := PlayerOneTurn new.
 	self executeMoveByPlayerTwoFrom: currentPosition to: newPosition.! !
 
-!TerniLapilli methodsFor: 'jugada' stamp: 'ps 11/7/2018 19:26:17'!
+!TerniLapilli methodsFor: 'jugada' stamp: 'd 11/8/2018 14:15:57'!
 playerTwoPlacesTokenAt: aPosition
 	
-	(GameEndingStatus with: self) assertNotOver.
-	turn assertPlayerTwoCanPlay.
-	(AmountOfPlayedTokensStatus with: self) assertThereAreRemainingTokensToPlay.
-	(PositionInTheBoard with: aPosition) assertPositionInsideTheBoard.
-	(PositionTakenStatus with: self and: aPosition) assertPositionNonTaken.
+	(PlayerTwoPlayValidator for: self) validateTokenPlacementAt: aPosition  onTurn: turn.
 
 	turn := PlayerOneTurn new.
 	self markPositionAsTakenByPlayerTwo: aPosition.! !
@@ -633,25 +692,16 @@ began
 isOver
 	 ^ self playerOneWon or: [self playerTwoWon]! !
 
-!TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/7/2018 19:27:10'!
+!TerniLapilli methodsFor: 'observadores' stamp: 'd 11/8/2018 13:23:45'!
 playerOneWon
 
-	 #(1,2,3) do:[:index | ((playerOneTakenPositions select: [:e| (e y) = index]) size = 3) ifTrue:[^true]].
-	 #(1,2,3) do:[:index | ((playerOneTakenPositions select: [:e| (e x) = index]) size = 3) ifTrue:[^true]].
-	 ((playerOneTakenPositions select: [:e| (e x) = (e y)]) size = 3) ifTrue:[^true].
-	 ((playerOneTakenPositions select: [:e| 4-(e x) = (e y)]) size = 3) ifTrue:[^true].
-	 ^false.
+	 ^self playerWithTheseTokensWon: playerOneTakenPositions.
 		! !
 
-!TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/7/2018 19:27:13'!
+!TerniLapilli methodsFor: 'observadores' stamp: 'd 11/8/2018 13:24:09'!
 playerTwoWon
 
-	 #(1,2,3) do:[:index | ((playerTwoTakenPositions select: [:e| (e y) = index]) size = 3) ifTrue:[^true]].
-	 #(1,2,3) do:[:index | ((playerTwoTakenPositions select: [:e| (e x) = index]) size = 3) ifTrue:[^true]].
-	 ((playerTwoTakenPositions select: [:e| (e x) = (e y)]) size = 3) ifTrue:[^true].
-	 ((playerTwoTakenPositions select: [:e| 4-(e x) = (e y)]) size = 3) ifTrue:[^true].
-	 ^false.
-		! !
+	 ^self playerWithTheseTokensWon: playerTwoTakenPositions.! !
 
 !TerniLapilli methodsFor: 'observadores' stamp: 'ps 11/1/2018 20:23:18'!
 positionIsTaken: aPoint 
@@ -700,6 +750,19 @@ markPositionAsTakenByPlayerOne: aPosition
 markPositionAsTakenByPlayerTwo: aPosition
 
 	playerTwoTakenPositions add: aPosition! !
+
+!TerniLapilli methodsFor: 'privados' stamp: 'd 11/8/2018 13:22:42'!
+playerWithTheseTokensWon: tokens
+	| won |
+	
+	won := false.
+
+	 #(1,2,3) do:[:index | won:= won or:[(tokens select: [:e| (e y) = index]) size = 3]].
+	 #(1,2,3) do:[:index | won:= won or:[(tokens select: [:e| (e x) = index]) size = 3]].
+	 won:= won or:[(tokens select: [:e| (e x) = (e y)]) size = 3].
+	 won:= won or:[(tokens select: [:e| 4-(e x) = (e y)]) size = 3].
+	
+	 ^won.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
