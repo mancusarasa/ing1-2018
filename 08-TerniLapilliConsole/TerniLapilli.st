@@ -872,7 +872,7 @@ test40CanNotSlideOWhenPlayingX
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions'
+	instanceVariableNames: 'state playerOPositions playerXPositions console lines'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -952,25 +952,47 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'HAW 11/8/2018 11:27:32'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'ps 11/8/2018 19:56:11'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
-	state := PlacingX new initializeFor: self.! !
+	state := PlacingX new initializeFor: self.
+	lines := OrderedCollection new.! !
 
 
-!TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
+!TerniLapilli methodsFor: 'marking board' stamp: 'ps 11/8/2018 20:41:49'!
 putOAt: aPosition
 
-	self assertIsInBoardBounds: aPosition .
-	state putOAt: aPosition! !
+	| newLine |
 
-!TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:12'!
+	self assertIsInBoardBounds: aPosition .
+	state putOAt: aPosition.
+	console notify: ('O marco en ' , aPosition asString).
+	self hasPlayerOWon ifTrue: [newLine := 'Estado: Juego terminado - ¡Gano O!!'] ifFalse: [newLine := 'Estado: Jugando X'].
+	console notify: newLine.! !
+
+!TerniLapilli methodsFor: 'marking board' stamp: 'ps 11/8/2018 20:46:21'!
 putXAt: aPosition
 
+	| newLine | 
+
 	self assertIsInBoardBounds: aPosition .
-	state putXAt: aPosition! !
+	state putXAt: aPosition.
+	console notify: ('X marco en ' , aPosition asString).
+	self hasPlayerXWon ifTrue: [newLine := 'Estado: Juego terminado - ¡Gano X!!'] ifFalse: [newLine := 'Estado: Jugando O'].
+	console notify: newLine.! !
+
+
+!TerniLapilli methodsFor: 'console interaction' stamp: 'ps 11/8/2018 19:55:52'!
+lines
+
+	^ lines copy! !
+
+!TerniLapilli methodsFor: 'console interaction' stamp: 'ps 11/8/2018 19:42:45'!
+registerConsole: aTerniLapilliConsole
+
+	console := aTerniLapilliConsole ! !
 
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
@@ -1056,17 +1078,27 @@ playerXPositions
 	^ playerXPositions copy.! !
 
 
-!TerniLapilli methodsFor: 'sliding' stamp: 'HAW 11/8/2018 11:48:39'!
+!TerniLapilli methodsFor: 'sliding' stamp: 'ps 11/8/2018 20:57:13'!
 slideOFrom: aPosition to: anotherPosition
 
-	self assertThereIsAnOPieceIn: aPosition.
-	state slideOFrom: aPosition to: anotherPosition! !
+	| newLine |
 
-!TerniLapilli methodsFor: 'sliding' stamp: 'HAW 11/8/2018 11:48:21'!
+	self assertThereIsAnOPieceIn: aPosition.
+	state slideOFrom: aPosition to: anotherPosition.
+	console notify: ('O deslizo hasta ', anotherPosition asString , ' desde ' , aPosition asString).
+	self hasPlayerOWon ifTrue: [newLine := 'Estado: Juego terminado - ¡Gano O!!'] ifFalse: [newLine := 'Estado: Jugando X'].
+	console notify: newLine.! !
+
+!TerniLapilli methodsFor: 'sliding' stamp: 'ps 11/8/2018 20:58:06'!
 slideXFrom: aPosition to: anotherPosition
 
+	| newLine |
+
 	self assertThereIsAnXPieceIn: aPosition.
-	state slideXFrom: aPosition to: anotherPosition! !
+	state slideXFrom: aPosition to: anotherPosition.
+	console notify: ('X deslizo hasta ', anotherPosition asString , ' desde ' , aPosition asString).
+	self hasPlayerXWon ifTrue: [newLine := 'Estado: Juego terminado - ¡Gano X!!'] ifFalse: [newLine := 'Estado: Jugando O'].
+	console notify: newLine.! !
 
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:41:03'!
@@ -1236,6 +1268,42 @@ positionOutsideBoardErrorMessage
 positionTakenErrorMessage
 	
 	^'Position taken'! !
+
+
+!classDefinition: #TerniLapilliConsole category: #TerniLapilli!
+Object subclass: #TerniLapilliConsole
+	instanceVariableNames: 'terniLapilli lines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'ps 11/8/2018 20:44:30'!
+initializeWith: aTerniLapilli
+
+	terniLapilli := aTerniLapilli.
+	lines := OrderedCollection new.
+	terniLapilli registerConsole: self.! !
+
+!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'ps 11/8/2018 20:39:12'!
+lines
+
+	^ lines copy! !
+
+!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'ps 11/8/2018 20:42:10'!
+notify: aString
+
+	lines add: aString ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TerniLapilliConsole class' category: #TerniLapilli!
+TerniLapilliConsole class
+	instanceVariableNames: ''!
+
+!TerniLapilliConsole class methodsFor: 'instance creation' stamp: 'ps 11/8/2018 19:38:59'!
+for: aTerniLapilli 
+
+	^ self new initializeWith: aTerniLapilli! !
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
