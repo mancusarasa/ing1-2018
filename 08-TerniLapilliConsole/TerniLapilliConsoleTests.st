@@ -196,3 +196,207 @@ test07LaConsolaRegistraCuandoElJugadorXGanaElPartidoConDesplazamientos
 	self assert: (lines at:14) equals: 'Estado: Jugando O'.
 	self assert: (lines at:15) equals: 'O deslizo hasta 2@3 desde 2@2'.
 	self assert: (lines at:16) equals: 'Estado: Juego terminado - ¡Gano O!!'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 11:44:55'!
+test08SePuedeAsignarUnaVistaAUnTerniLapilli
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: ' | | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' | | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' | | '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 11:52:25'!
+test09PonerUnaXSeVeReflejadoEnLaVista
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' | | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' | | '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:14:18'!
+test10PonerUnaOSeVeReflejadoEnLaVista
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	game putOAt: 2@3.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' | | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' |O| '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:21:16'!
+test11MoverUnaXSeVeReflejadoEnLaVista
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	game putOAt: 2@3.
+	game putXAt: 2@2.
+	game putOAt: 1@3.
+	game putXAt: 3@1.
+	game putOAt: 2@1.
+	game slideXFrom: 2@2 to: 1@2.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X|O|X'.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: 'X| | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: 'O|O| '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:43:14'!
+test12SiSeCreaUnaVistaDeUnPartidoEmpezadoEstaReflejaElMomentoActual
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	
+	game putXAt: 1@1.
+	game putOAt: 2@3.
+	game putXAt: 2@2.
+	game putOAt: 1@3.
+	
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 3@1.
+		
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| |X'.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' |X| '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: 'O|O| '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:03:47'!
+test13ElEstadoPosteriorALaJugadaSeVeReflejadoEnLaVistaTurnoO
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' | | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' | | '.
+	self assert: ( lines at: 6) equals: 'Playing O'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:03:44'!
+test14ElEstadoPosteriorALaJugadaSeVeReflejadoEnLaVistaTurnoX
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	game putOAt: 2@3.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: ' | | '.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' |O| '.
+	self assert: ( lines at: 6) equals: 'Playing X'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:05:01'!
+test15ElEstadoPosteriorALaJugadaSeVeReflejadoEnLaVistaGanaX
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@1.
+	game putOAt: 1@2.
+	game putXAt: 2@2.
+	game putOAt: 3@2.
+	game putXAt: 3@3.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'X| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: 'O|X|O'.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' | |X'.
+	self assert: ( lines at: 6) equals: 'X Won!!'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:03:36'!
+test16ElEstadoPosteriorALaJugadaSeVeReflejadoEnLaVistaGanaO
+
+	| game vista lines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	
+	game putXAt: 1@2.
+	game putOAt: 1@1.
+	game putXAt: 3@2.
+	game putOAt: 2@2.
+	game putXAt: 2@3.
+	game putOAt: 3@3.
+	
+	lines := vista lines.
+	self assert: ( lines at: 1) equals: 'O| | '.
+	self assert: ( lines at: 2) equals: '-----'.
+	self assert: ( lines at: 3) equals: 'X|O|X'.
+	self assert: ( lines at: 4) equals: '-----'.
+	self assert: ( lines at: 5) equals: ' |X|O'.
+	self assert: ( lines at: 6) equals: 'O Won!!'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:40:53'!
+test17UnTerniLapilliPuedeTenerMultiplesObservadores
+
+	| game vista vistaLines console consoleLines | 
+	
+	game := TerniLapilli new.
+	vista := TerniLapilliView for: game.
+	console := TerniLapilliConsole for: game.
+	
+	game putXAt: 1@1.
+	game putOAt: 2@3.
+		
+	consoleLines := console lines.	
+	vistaLines := vista lines.
+	
+	self assert: (consoleLines at: 1) equals: 'X marco en 1@1'.
+	self assert: (consoleLines at: 2) equals: 'Estado: Jugando O'.
+	self assert: (consoleLines at: 3) equals: 'O marco en 2@3'.
+	self assert: (consoleLines at: 4) equals: 'Estado: Jugando X'.
+
+	self assert: ( vistaLines at: 1) equals: 'X| | '.
+	self assert: ( vistaLines at: 2) equals: '-----'.
+	self assert: ( vistaLines at: 3) equals: ' | | '.
+	self assert: ( vistaLines at: 4) equals: '-----'.
+	self assert: ( vistaLines at: 5) equals: ' |O| '.! !
