@@ -1348,16 +1348,6 @@ notifyOMovementFrom: aPosition to: newPosition
 
 	self subclassResponsibility! !
 
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:53'!
-notifyOTurn
-
-	self subclassResponsibility! !
-
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:49'!
-notifyOWon
-
-	self subclassResponsibility! !
-
 !TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:51:49'!
 notifyPlacingO: aPlacingO
 
@@ -1378,10 +1368,9 @@ notifySlidingX: aSlidingX
 
 	self subclassResponsibility! !
 
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:36:54'!
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:43:43'!
 notifyStateChange: aTerniLapilliState
 
-	"prueba de concepto para ver si esto elimina un millon de codigo repetido o no"
 	self applyLastPlayFrom: aTerniLapilliState.
 	^ aTerniLapilliState notifyNewStateTo: self! !
 
@@ -1392,16 +1381,6 @@ notifyXAt: aPosition
 
 !TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:39'!
 notifyXMovementFrom: aPosition to: newPosition
-
-	self subclassResponsibility! !
-
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:27:42'!
-notifyXTurn
-
-	self subclassResponsibility! !
-
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:27:47'!
-notifyXWon
 
 	self subclassResponsibility! !
 
@@ -1612,7 +1591,8 @@ asString
 
 	self subclassResponsibility ! !
 
-!TerniLapilliPlay methodsFor: 'printing' stamp: 'ps 11/10/2018 19:41:10'!
+
+!TerniLapilliPlay methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 19:41:10'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
 
 	self subclassResponsibility ! !
@@ -1631,7 +1611,7 @@ asString
 	^ ''! !
 
 
-!NullPlay methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 21:49:59'!
+!NullPlay methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 21:49:59'!
 modifyTerniLapilliObserver: aTerniLapilliObserver! !
 
 
@@ -1654,7 +1634,7 @@ initializeIn: aPosition
 	position := aPosition ! !
 
 
-!PlaceO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:56'!
+!PlaceO methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 19:48:56'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
 
 	^ aTerniLapilliObserver notifyOAt: position ! !
@@ -1690,7 +1670,7 @@ initializeIn: aPosition
 	position := aPosition ! !
 
 
-!PlaceX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:30'!
+!PlaceX methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 19:48:30'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
 
 	^ aTerniLapilliObserver notifyXAt: position ! !
@@ -1727,7 +1707,7 @@ initializeFrom: aPosition to: anotherPosition
 	toPosition := anotherPosition .! !
 
 
-!SlideO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:45:11'!
+!SlideO methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 20:45:11'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
 
 	^ aTerniLapilliObserver notifyOMovementFrom: fromPosition to: toPosition ! !
@@ -1764,7 +1744,7 @@ initializeFrom: aPosition to: anotherPosition
 	toPosition := anotherPosition .! !
 
 
-!SlideX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:43:45'!
+!SlideX methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 20:43:45'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
 
 	^ aTerniLapilliObserver notifyXMovementFrom: fromPosition to: toPosition ! !
@@ -1886,6 +1866,11 @@ TerniLapilliState subclass: #GameOverState
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
+!GameOverState methodsFor: 'testing game result' stamp: 'ps 11/10/2018 20:21:22'!
+WonByX
+
+	^ game hasPlayerXWon ! !
+
 !GameOverState methodsFor: 'testing game result' stamp: 'HAW 11/8/2018 12:15:43'!
 isOver
 
@@ -1914,12 +1899,7 @@ slideXFrom: aPosition to: anotherPostion
 	game error: game class canNotPlayWhenGameIsOverErrorMessage ! !
 
 
-!GameOverState methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:21:22'!
-WonByX
-
-	^ game hasPlayerXWon ! !
-
-!GameOverState methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:10:23'!
+!GameOverState methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 20:10:23'!
 notifyNewStateTo: aTerniLapilliObserver
 
 	^ aTerniLapilliObserver notifyGameOver: self! !
