@@ -1326,6 +1326,13 @@ lines
 	self subclassResponsibility! !
 
 
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:36:41'!
+applyLastPlayFrom: aTerniLapilliState
+
+	| lastPlay |
+	lastPlay := aTerniLapilliState gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.! !
+
 !TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:12:24'!
 notifyGameOver: aGameOver
 
@@ -1371,9 +1378,11 @@ notifySlidingX: aSlidingX
 
 	self subclassResponsibility! !
 
-!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:29:42'!
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:36:54'!
 notifyStateChange: aTerniLapilliState
 
+	"prueba de concepto para ver si esto elimina un millon de codigo repetido o no"
+	self applyLastPlayFrom: aTerniLapilliState.
 	^ aTerniLapilliState notifyNewStateTo: self! !
 
 !TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:50:49'!
@@ -1428,13 +1437,9 @@ lines
 	^ lines copy.! !
 
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:18:33'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:37:20'!
 notifyGameOver: aGameOver
 
-	| lastPlay |
-
-	lastPlay := aGameOver gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	aGameOver WonByX ifTrue: [self notifyXWon] ifFalse: [self notifyOWon].! !
 
 !TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:37:07'!
@@ -1457,41 +1462,24 @@ notifyOWon
 
 	lines add: 'Estado: Juego terminado - ¡Gano O!!'.! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:58:45'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:37:33'!
 notifyPlacingO: aPlacingO
 
-	| lastPlay |
-
-	lastPlay := aPlacingO gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyOTurn.! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:58:56'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:37:38'!
 notifyPlacingX: aPlacingX
 
-	| lastPlay |
-
-	lastPlay := aPlacingX gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyXTurn.! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:27:51'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:37:42'!
 notifySlidingO: aSlidingO
 
-
-	| lastPlay |
-
-	lastPlay := aSlidingO gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyOTurn.! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:25:30'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:37:47'!
 notifySlidingX: aSlidingX
 
-	| lastPlay |
-
-	lastPlay := aSlidingX gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyXTurn.! !
 
 !TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:47:27'!
@@ -1504,12 +1492,14 @@ notifyXMovementFrom: aPosition to: newPosition
 
 	lines add: ('X deslizo hasta ', newPosition asString , ' desde ' , aPosition asString).! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'd 11/10/2018 12:48:36'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:38:51'!
 notifyXTurn
+
 	lines add: 'Estado: Jugando X'.! !
 
-!TerniLapilliConsole methodsFor: 'notifications' stamp: 'd 11/10/2018 12:54:15'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:38:43'!
 notifyXWon
+
 	lines add: 'Estado: Juego terminado - ¡Gano X!!'.! !
 
 
@@ -1542,13 +1532,9 @@ lines
 	^lines! !
 
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:25:15'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:39:31'!
 notifyGameOver: aGameOver
 
-	| lastPlay |
-
-	lastPlay := aGameOver gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	aGameOver WonByX ifTrue: [self notifyXWon] ifFalse: [self notifyOWon].! !
 
 !TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:20:58'!
@@ -1572,44 +1558,29 @@ notifyOWon
 
 	currentState := 'O Won!!'.! !
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:21:54'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:39:38'!
 notifyPlacingO: aPlacingO
 
-	| lastPlay |
-
-	lastPlay := aPlacingO gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyOTurn.! !
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:08'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:40:00'!
 notifyPlacingX: aPlacingX
 
-	| lastPlay |
-
-	lastPlay := aPlacingX gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyXTurn.! !
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:22'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:40:09'!
 notifySlidingO: aSlidingO
 
-	| lastPlay |
-
-	lastPlay := aSlidingO gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyOTurn.! !
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:30'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:40:13'!
 notifySlidingX: aSlidingX
 
-	| lastPlay |
-
-	lastPlay := aSlidingX gameLastPlay.
-	lastPlay modifyTerniLapilliObserver: self.
 	self notifyXTurn.! !
 
-!TerniLapilliView methodsFor: 'notifications' stamp: 'd 11/10/2018 12:07:39'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/11/2018 13:40:16'!
 notifyXAt: aPosition
+
 	board at: (aPosition x)+(((aPosition y)-1)*3) put: 'X'.! !
 
 !TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:19:26'!
