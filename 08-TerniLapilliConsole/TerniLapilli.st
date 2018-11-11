@@ -870,9 +870,58 @@ test40CanNotSlideOWhenPlayingX
 	! !
 
 
+!classDefinition: #ActiveVariable category: #TerniLapilli!
+Object subclass: #ActiveVariable
+	instanceVariableNames: 'value observers'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!ActiveVariable methodsFor: 'private' stamp: 'ps 11/10/2018 18:45:54'!
+doesNotUnderstand: aMessage
+
+	^ aMessage sendTo: value! !
+
+
+!ActiveVariable methodsFor: 'initialization' stamp: 'ps 11/10/2018 18:40:32'!
+initializeWith: aVariable
+
+	value := aVariable.
+	observers := OrderedCollection new.! !
+
+
+!ActiveVariable methodsFor: 'value' stamp: 'ps 11/10/2018 21:30:22'!
+setValue: newValue
+
+	value := newValue.
+	observers do: [ :anObserver | anObserver notifyStateChange: newValue].! !
+
+!ActiveVariable methodsFor: 'value' stamp: 'ps 11/10/2018 18:39:26'!
+value
+
+	^ value! !
+
+
+!ActiveVariable methodsFor: 'registering observers' stamp: 'ps 11/10/2018 19:02:04'!
+registerObserver: anObserver
+
+	observers add: anObserver! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ActiveVariable class' category: #TerniLapilli!
+ActiveVariable class
+	instanceVariableNames: ''!
+
+!ActiveVariable class methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:43:42'!
+with: aVariable
+
+	^ self new initializeWith: aVariable ! !
+
+
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions observers'
+	instanceVariableNames: 'state playerOPositions playerXPositions lastPlay'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -952,49 +1001,44 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'd 11/10/2018 13:33:00'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'ps 11/10/2018 19:04:48'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
-	state := PlacingX new initializeFor: self.
-	observers := OrderedCollection new.! !
+	state := ActiveVariable with: (PlacingX new initializeFor: self).
+	lastPlay := NullPlay new.! !
 
 
-!TerniLapilli methodsFor: 'marking board' stamp: 'd 11/10/2018 13:38:45'!
+!TerniLapilli methodsFor: 'marking board' stamp: 'ps 11/10/2018 19:05:17'!
 putOAt: aPosition
 
 	self assertIsInBoardBounds: aPosition .
-	state putOAt: aPosition.
-	observers do: [:observer| observer notifyOAt: aPosition].
-	self hasPlayerOWon ifTrue: [observers do: [:observer| observer notifyOWon]] ifFalse: [observers do: [:observer| observer notifyXTurn]].
-! !
+	state putOAt: aPosition.! !
 
-!TerniLapilli methodsFor: 'marking board' stamp: 'd 11/10/2018 13:39:13'!
+!TerniLapilli methodsFor: 'marking board' stamp: 'ps 11/10/2018 19:05:42'!
 putXAt: aPosition
 
 	self assertIsInBoardBounds: aPosition .
-	state putXAt: aPosition.
-	observers do: [:observer| observer notifyXAt: aPosition].
-	self hasPlayerXWon ifTrue: [observers do: [:observer| observer notifyXWon]] ifFalse: [observers do: [:observer| observer notifyOTurn]].
-! !
+	state putXAt: aPosition.! !
 
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'ps 11/10/2018 18:52:17'!
 changeStateAfterAdding: aPosition to: positions  
 
 	positions add: aPosition.
-	state := TerniLapilliState for: self
+	state setValue: (TerniLapilliState for: self)
 	! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'ps 11/10/2018 19:38:37'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 
-	self changeStateAfterAdding: aPosition to: playerOPositions
-		! !
+	lastPlay := PlaceO in: aPosition.
+	self changeStateAfterAdding: aPosition to: playerOPositions.
+	! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
 putOWhenPlacingXAt: aPosition
@@ -1016,13 +1060,14 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'ps 11/10/2018 19:38:52'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 	
-	self changeStateAfterAdding: aPosition to: playerXPositions
+	lastPlay := PlaceX in: aPosition.
+	self changeStateAfterAdding: aPosition to: playerXPositions.
 	! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
@@ -1063,23 +1108,18 @@ playerXPositions
 	^ playerXPositions copy.! !
 
 
-!TerniLapilli methodsFor: 'sliding' stamp: 'd 11/10/2018 13:39:55'!
+!TerniLapilli methodsFor: 'sliding' stamp: 'ps 11/10/2018 19:06:24'!
 slideOFrom: aPosition to: anotherPosition
 
 	self assertThereIsAnOPieceIn: aPosition.
 	state slideOFrom: aPosition to: anotherPosition.
-	observers do: [:observer| observer notifyOMovementFrom: aPosition to: anotherPosition].
-	self hasPlayerOWon ifTrue: [observers do: [:observer| observer notifyOWon]] ifFalse: [observers do: [:observer| observer notifyXTurn]].
 ! !
 
-!TerniLapilli methodsFor: 'sliding' stamp: 'd 11/10/2018 13:40:20'!
+!TerniLapilli methodsFor: 'sliding' stamp: 'ps 11/10/2018 19:06:28'!
 slideXFrom: aPosition to: anotherPosition
 
 	self assertThereIsAnXPieceIn: aPosition.
-	state slideXFrom: aPosition to: anotherPosition.
-	observers do: [:observer| observer notifyXMovementFrom: aPosition to: anotherPosition].
-	self hasPlayerXWon ifTrue: [observers do: [:observer| observer notifyXWon]] ifFalse: [observers do: [:observer| observer notifyOTurn]].
-! !
+	state slideXFrom: aPosition to: anotherPosition.! !
 
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:41:03'!
@@ -1092,15 +1132,16 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'ps 11/10/2018 19:39:09'!
 slideOWhenSlidingOFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
+	lastPlay := SlideO from: aPosition to: anotherPosition.
 	playerOPositions remove: aPosition.
-	self changeStateAfterAdding: anotherPosition to: playerOPositions
-	 ! !
+	self changeStateAfterAdding: anotherPosition to: playerOPositions.
+	! !
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:16:01'!
 slideXWhenPlacingXFrom: aPosition to: anotherPosition
@@ -1112,14 +1153,16 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'ps 11/10/2018 19:39:16'!
 slideXWhenSlidingXFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
+	lastPlay := SlideX from: aPosition to: anotherPosition.
 	playerXPositions remove: aPosition.
-	self changeStateAfterAdding: anotherPosition to: playerXPositions! !
+	self changeStateAfterAdding: anotherPosition to: playerXPositions.
+	! !
 
 
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 12:19:28'!
@@ -1186,10 +1229,16 @@ isSlidingX
 	^state isSlidingX! !
 
 
-!TerniLapilli methodsFor: 'observer interaction' stamp: 'd 11/10/2018 13:32:46'!
+!TerniLapilli methodsFor: 'observer interaction' stamp: 'ps 11/10/2018 19:02:43'!
 registerObserver: anObserver
 
-	observers add: anObserver ! !
+	state registerObserver: anObserver.! !
+
+
+!TerniLapilli methodsFor: 'last play' stamp: 'ps 11/10/2018 18:06:14'!
+lastPlay
+
+	^ lastPlay! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1264,47 +1313,88 @@ Object subclass: #TerniLapilliObserver
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:33:06'!
+!TerniLapilliObserver methodsFor: 'initialization' stamp: 'd 11/10/2018 12:33:06'!
 initializeWith: aTerniLapilli
 
 	terniLapilli := aTerniLapilli.
 	terniLapilli registerObserver: self.! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:31:49'!
+
+!TerniLapilliObserver methodsFor: 'lines' stamp: 'ps 11/10/2018 21:27:09'!
 lines 
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:58:55'!
+	self subclassResponsibility! !
+
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:12:24'!
+notifyGameOver: aGameOver
+
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:57'!
 notifyOAt: aPosition
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:58:57'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:47:01'!
 notifyOMovementFrom: aPosition to: newPosition
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:01'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:53'!
 notifyOTurn
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:04'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:49'!
 notifyOWon
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:08'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:51:49'!
+notifyPlacingO: aPlacingO
+
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:53:28'!
+notifyPlacingX: aPlacingX
+
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:26:58'!
+notifySlidingO: aSlidingO
+
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:24:20'!
+notifySlidingX: aSlidingX
+
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:29:42'!
+notifyStateChange: aTerniLapilliState
+
+	^ aTerniLapilliState notifyNewStateTo: self! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:50:49'!
 notifyXAt: aPosition
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:11'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:28:39'!
 notifyXMovementFrom: aPosition to: newPosition
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:14'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:27:42'!
 notifyXTurn
-	self subclassResponsibility .! !
 
-!TerniLapilliObserver methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:59:17'!
+	self subclassResponsibility! !
+
+!TerniLapilliObserver methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:27:47'!
 notifyXWon
-	self subclassResponsibility .! !
+
+	self subclassResponsibility! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1325,45 +1415,100 @@ TerniLapilliObserver subclass: #TerniLapilliConsole
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:33:31'!
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'd 11/10/2018 12:33:31'!
 initializeWith: aTerniLapilli
 
 	super initializeWith: aTerniLapilli .
 	lines:=OrderedCollection new.! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:31:30'!
+
+!TerniLapilliConsole methodsFor: 'lines' stamp: 'ps 11/10/2018 21:37:12'!
 lines 
+
 	^ lines copy.! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 11:56:31'!
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:18:33'!
+notifyGameOver: aGameOver
+
+	| lastPlay |
+
+	lastPlay := aGameOver gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	aGameOver WonByX ifTrue: [self notifyXWon] ifFalse: [self notifyOWon].! !
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:37:07'!
 notifyOAt: aPosition
+
 	lines add: ('O marco en ' , aPosition asString).! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:24:59'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:36:58'!
 notifyOMovementFrom: aPosition to: newPosition
+
 	lines add: ('O deslizo hasta ', newPosition asString , ' desde ' , aPosition asString).! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:48:31'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:58:33'!
 notifyOTurn
+
 	lines add: 'Estado: Jugando O'.! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:54:07'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:36:44'!
 notifyOWon
+
 	lines add: 'Estado: Juego terminado - ¡Gano O!!'.! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 11:56:39'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:58:45'!
+notifyPlacingO: aPlacingO
+
+	| lastPlay |
+
+	lastPlay := aPlacingO gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyOTurn.! !
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:58:56'!
+notifyPlacingX: aPlacingX
+
+	| lastPlay |
+
+	lastPlay := aPlacingX gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyXTurn.! !
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:27:51'!
+notifySlidingO: aSlidingO
+
+
+	| lastPlay |
+
+	lastPlay := aSlidingO gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyOTurn.! !
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:25:30'!
+notifySlidingX: aSlidingX
+
+	| lastPlay |
+
+	lastPlay := aSlidingX gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyXTurn.! !
+
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 19:47:27'!
 notifyXAt: aPosition
+
 	lines add: ('X marco en ' , aPosition asString).! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:25:09'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'ps 11/10/2018 20:40:47'!
 notifyXMovementFrom: aPosition to: newPosition
+
 	lines add: ('X deslizo hasta ', newPosition asString , ' desde ' , aPosition asString).! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:48:36'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'd 11/10/2018 12:48:36'!
 notifyXTurn
 	lines add: 'Estado: Jugando X'.! !
 
-!TerniLapilliConsole methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:54:15'!
+!TerniLapilliConsole methodsFor: 'notifications' stamp: 'd 11/10/2018 12:54:15'!
 notifyXWon
 	lines add: 'Estado: Juego terminado - ¡Gano X!!'.! !
 
@@ -1375,7 +1520,7 @@ TerniLapilliObserver subclass: #TerniLapilliView
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:25:33'!
+!TerniLapilliView methodsFor: 'initialization' stamp: 'd 11/10/2018 13:25:33'!
 initializeWith: aTerniLapilli
 
 	super initializeWith: aTerniLapilli .
@@ -1384,8 +1529,10 @@ initializeWith: aTerniLapilli
 	terniLapilli playerOPositions do:[:aPosition | self notifyOAt: aPosition ].
 	! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:24:31'!
+
+!TerniLapilliView methodsFor: 'lines' stamp: 'ps 11/10/2018 21:21:02'!
 lines
+
 	|lines|
 	lines:= OrderedCollection new.
 	
@@ -1397,39 +1544,241 @@ lines
 	lines add: currentState.
 	^lines! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:12:52'!
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:25:15'!
+notifyGameOver: aGameOver
+
+	| lastPlay |
+
+	lastPlay := aGameOver gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	aGameOver WonByX ifTrue: [self notifyXWon] ifFalse: [self notifyOWon].! !
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:20:58'!
 notifyOAt: aPosition
+
 	board at: (aPosition x)+(((aPosition y)-1)*3) put: 'O'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:22:09'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:20:54'!
 notifyOMovementFrom: aPosition to: newPosition
+
 	board at: (aPosition x)+(((aPosition y)-1)*3) put: ' '.
 	board at: (newPosition x)+(((newPosition y)-1)*3) put: 'O'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:23:36'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:20:49'!
 notifyOTurn
+
 	currentState := 'Playing O'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:24:09'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:20:45'!
 notifyOWon
+
 	currentState := 'O Won!!'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:07:39'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:21:54'!
+notifyPlacingO: aPlacingO
+
+	| lastPlay |
+
+	lastPlay := aPlacingO gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyOTurn.! !
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:08'!
+notifyPlacingX: aPlacingX
+
+	| lastPlay |
+
+	lastPlay := aPlacingX gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyXTurn.! !
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:22'!
+notifySlidingO: aSlidingO
+
+	| lastPlay |
+
+	lastPlay := aSlidingO gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyOTurn.! !
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:22:30'!
+notifySlidingX: aSlidingX
+
+	| lastPlay |
+
+	lastPlay := aSlidingX gameLastPlay.
+	lastPlay modifyTerniLapilliObserver: self.
+	self notifyXTurn.! !
+
+!TerniLapilliView methodsFor: 'notifications' stamp: 'd 11/10/2018 12:07:39'!
 notifyXAt: aPosition
 	board at: (aPosition x)+(((aPosition y)-1)*3) put: 'X'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:22:23'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:19:26'!
 notifyXMovementFrom: aPosition to: newPosition
+
 	board at: (aPosition x)+(((aPosition y)-1)*3) put: ' '.
 	board at: (newPosition x)+(((newPosition y)-1)*3) put: 'X'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:23:48'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:19:55'!
 notifyXTurn
+
 	currentState := 'Playing X'.! !
 
-!TerniLapilliView methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:23:58'!
+!TerniLapilliView methodsFor: 'notifications' stamp: 'ps 11/10/2018 21:19:52'!
 notifyXWon
-	currentState := 'X Won!!'.! !
+
+	currentState := 'X Won!!'! !
+
+
+!classDefinition: #TerniLapilliPlay category: #TerniLapilli!
+Object subclass: #TerniLapilliPlay
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliPlay methodsFor: 'printing' stamp: 'ps 11/10/2018 17:56:42'!
+asString
+
+	self subclassResponsibility ! !
+
+!TerniLapilliPlay methodsFor: 'printing' stamp: 'ps 11/10/2018 19:41:10'!
+modifyTerniLapilliObserver: aTerniLapilliObserver
+
+	self subclassResponsibility ! !
+
+
+!classDefinition: #NullPlay category: #TerniLapilli!
+TerniLapilliPlay subclass: #NullPlay
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!NullPlay methodsFor: 'printing' stamp: 'ps 11/10/2018 17:58:11'!
+asString
+
+	^ ''! !
+
+
+!classDefinition: #PlaceO category: #TerniLapilli!
+TerniLapilliPlay subclass: #PlaceO
+	instanceVariableNames: 'position'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PlaceO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:36'!
+initializeIn: aPosition 
+
+	position := aPosition ! !
+
+!PlaceO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:56'!
+modifyTerniLapilliObserver: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyOAt: position ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PlaceO class' category: #TerniLapilli!
+PlaceO class
+	instanceVariableNames: ''!
+
+!PlaceO class methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:12'!
+in: aPosition
+
+	^ self new initializeIn: aPosition ! !
+
+
+!classDefinition: #PlaceX category: #TerniLapilli!
+TerniLapilliPlay subclass: #PlaceX
+	instanceVariableNames: 'position'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!PlaceX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:43'!
+initializeIn: aPosition 
+
+	position := aPosition ! !
+
+!PlaceX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:30'!
+modifyTerniLapilliObserver: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyXAt: position ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PlaceX class' category: #TerniLapilli!
+PlaceX class
+	instanceVariableNames: ''!
+
+!PlaceX class methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:18'!
+in: aPosition
+
+	^ self new initializeIn: aPosition ! !
+
+
+!classDefinition: #SlideO category: #TerniLapilli!
+TerniLapilliPlay subclass: #SlideO
+	instanceVariableNames: 'fromPosition toPosition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!SlideO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:04:37'!
+initializeFrom: aPosition to: anotherPosition 
+
+	fromPosition := aPosition .
+	toPosition := anotherPosition .! !
+
+!SlideO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:45:11'!
+modifyTerniLapilliObserver: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyOMovementFrom: fromPosition to: toPosition ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SlideO class' category: #TerniLapilli!
+SlideO class
+	instanceVariableNames: ''!
+
+!SlideO class methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:37:17'!
+from: aPosition to: anotherPosition
+
+	^ self new initializeFrom: aPosition to: anotherPosition ! !
+
+
+!classDefinition: #SlideX category: #TerniLapilli!
+TerniLapilliPlay subclass: #SlideX
+	instanceVariableNames: 'fromPosition toPosition'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!SlideX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:04:24'!
+initializeFrom: aPosition to: anotherPosition 
+
+	fromPosition := aPosition .
+	toPosition := anotherPosition .! !
+
+!SlideX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:43:45'!
+modifyTerniLapilliObserver: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyXMovementFrom: fromPosition to: toPosition ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SlideX class' category: #TerniLapilli!
+SlideX class
+	instanceVariableNames: ''!
+
+!SlideX class methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:37:26'!
+from: aPosition to: anotherPosition
+
+	^ self new initializeFrom: aPosition to: anotherPosition ! !
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
@@ -1498,6 +1847,17 @@ initializeFor: aGame
 
 	game := aGame ! !
 
+
+!TerniLapilliState methodsFor: 'observer notifications' stamp: 'ps 11/10/2018 19:17:29'!
+gameLastPlay
+
+	^ game lastPlay ! !
+
+!TerniLapilliState methodsFor: 'observer notifications' stamp: 'ps 11/10/2018 19:11:33'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	self subclassResponsibility ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'TerniLapilliState class' category: #TerniLapilli!
@@ -1552,6 +1912,17 @@ slideOFrom: aPosition to: anotherPostion
 slideXFrom: aPosition to: anotherPostion
 
 	game error: game class canNotPlayWhenGameIsOverErrorMessage ! !
+
+
+!GameOverState methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:21:22'!
+WonByX
+
+	^ game hasPlayerXWon ! !
+
+!GameOverState methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:10:23'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyGameOver: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1618,6 +1989,12 @@ slideOFrom: aPosition to: anotherPostion
 
 	game slideOWhenPlacingOFrom: aPosition to: anotherPostion .! !
 
+
+!PlacingO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:13:41'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyPlacingO: self.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlacingO class' category: #TerniLapilli!
@@ -1658,6 +2035,12 @@ slideOFrom: aPosition to: anotherPostion
 areAllXsOnTheBoard
 	
 	^true! !
+
+
+!SlidingO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:26:15'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifySlidingO: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1730,6 +2113,11 @@ isPlacingX
 
 	^true! !
 
+!PlacingX methodsFor: 'testing playing turn' stamp: 'ps 11/10/2018 19:50:49'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifyPlacingX: self.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'PlacingX class' category: #TerniLapilli!
@@ -1776,6 +2164,12 @@ areAllXsOnTheBoard
 isSlidingX
 
 	^true! !
+
+
+!SlidingX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:23:38'!
+notifyNewStateTo: aTerniLapilliObserver
+
+	^ aTerniLapilliObserver notifySlidingX: self! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
