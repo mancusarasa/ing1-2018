@@ -1662,6 +1662,10 @@ asString
 
 	^ ''! !
 
+
+!NullPlay methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 21:49:59'!
+modifyTerniLapilliObserver: aTerniLapilliObserver! !
+
 
 !classDefinition: #PlaceO category: #TerniLapilli!
 TerniLapilliPlay subclass: #PlaceO
@@ -1670,10 +1674,17 @@ TerniLapilliPlay subclass: #PlaceO
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!PlaceO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:36'!
+!PlaceO methodsFor: 'printing' stamp: 'ps 11/10/2018 21:46:16'!
+asString
+
+	^ 'An O was put at ' , position asString! !
+
+
+!PlaceO methodsFor: 'initialization' stamp: 'ps 11/10/2018 18:02:36'!
 initializeIn: aPosition 
 
 	position := aPosition ! !
+
 
 !PlaceO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:56'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
@@ -1699,10 +1710,17 @@ TerniLapilliPlay subclass: #PlaceX
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!PlaceX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:02:43'!
+!PlaceX methodsFor: 'printing' stamp: 'ps 11/10/2018 21:46:38'!
+asString
+
+	^ 'An X was put at ' , position asString! !
+
+
+!PlaceX methodsFor: 'initialization' stamp: 'ps 11/10/2018 18:02:43'!
 initializeIn: aPosition 
 
 	position := aPosition ! !
+
 
 !PlaceX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 19:48:30'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
@@ -1728,11 +1746,18 @@ TerniLapilliPlay subclass: #SlideO
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!SlideO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:04:37'!
+!SlideO methodsFor: 'printing' stamp: 'ps 11/10/2018 21:47:16'!
+asString
+
+	^ 'An O was slid from ' , fromPosition asString , ' to ' , toPosition asString! !
+
+
+!SlideO methodsFor: 'initialization' stamp: 'ps 11/10/2018 18:04:37'!
 initializeFrom: aPosition to: anotherPosition 
 
 	fromPosition := aPosition .
 	toPosition := anotherPosition .! !
+
 
 !SlideO methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:45:11'!
 modifyTerniLapilliObserver: aTerniLapilliObserver
@@ -1758,11 +1783,18 @@ TerniLapilliPlay subclass: #SlideX
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!SlideX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 18:04:24'!
+!SlideX methodsFor: 'printing' stamp: 'ps 11/10/2018 21:47:27'!
+asString
+
+	^ 'An X was slid from ' , fromPosition asString , ' to ' , toPosition asString! !
+
+
+!SlideX methodsFor: 'initialization' stamp: 'ps 11/10/2018 18:04:24'!
 initializeFrom: aPosition to: anotherPosition 
 
 	fromPosition := aPosition .
 	toPosition := anotherPosition .! !
+
 
 !SlideX methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 20:43:45'!
 modifyTerniLapilliObserver: aTerniLapilliObserver

@@ -400,3 +400,34 @@ test17UnTerniLapilliPuedeTenerMultiplesObservadores
 	self assert: ( vistaLines at: 3) equals: ' | | '.
 	self assert: ( vistaLines at: 4) equals: '-----'.
 	self assert: ( vistaLines at: 5) equals: ' |O| '.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 21:53:10'!
+test18UnTerniLapilliPuedeReportarLaJugadaAnteriorAlPonerFichas
+
+	| game | 
+	
+	game := TerniLapilli new.
+	
+	game putXAt: 1@1.
+	self assert: (game lastPlay asString) equals: 'An X was put at 1@1'.
+	game putOAt: 2@3.
+	self assert: (game lastPlay asString) equals: 'An O was put at 2@3'.! !
+
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 21:57:17'!
+test19UnTerniLapilliPuedeReportarLaJugadaAnteriorAlDesplazarFichas
+
+	| game |
+
+	game := TerniLapilli new.
+
+	game putXAt: 3@2.
+	game putOAt: 1@1.
+	game putXAt: 1@3.
+	game putOAt: 3@1.
+	game putXAt: 3@3.
+	game putOAt: 2@2.
+	
+	game slideXFrom: 1@3 to: 1@2.
+	self assert: (game lastPlay asString) equals: 'An X was slid from 1@3 to 1@2'.
+	game slideOFrom: 2@2 to: 2@1.
+	self assert: (game lastPlay asString) equals: 'An O was slid from 2@2 to 2@1'.! !
