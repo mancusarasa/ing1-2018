@@ -270,8 +270,8 @@ test11MoverUnaXSeVeReflejadoEnLaVista
 	self assert: ( lines at: 4) equals: '-----'.
 	self assert: ( lines at: 5) equals: 'O|O| '.! !
 
-!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 12:43:14'!
-test12SiSeCreaUnaVistaDeUnPartidoEmpezadoEstaReflejaElMomentoActual
+!TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'ps 11/10/2018 22:11:13'!
+test12UnaVistaCreadaEnBaseAUnPartidoEmpezadoSoloReflejaLasJugadasPosteriores
 
 	| game vista lines | 
 	
@@ -287,11 +287,11 @@ test12SiSeCreaUnaVistaDeUnPartidoEmpezadoEstaReflejaElMomentoActual
 	game putXAt: 3@1.
 		
 	lines := vista lines.
-	self assert: ( lines at: 1) equals: 'X| |X'.
+	self assert: ( lines at: 1) equals: ' | |X'.
 	self assert: ( lines at: 2) equals: '-----'.
-	self assert: ( lines at: 3) equals: ' |X| '.
+	self assert: ( lines at: 3) equals: ' | | '.
 	self assert: ( lines at: 4) equals: '-----'.
-	self assert: ( lines at: 5) equals: 'O|O| '.! !
+	self assert: ( lines at: 5) equals: ' | | '.! !
 
 !TerniLapilliConsoleTests methodsFor: 'as yet unclassified' stamp: 'd 11/10/2018 13:03:47'!
 test13ElEstadoPosteriorALaJugadaSeVeReflejadoEnLaVistaTurnoO

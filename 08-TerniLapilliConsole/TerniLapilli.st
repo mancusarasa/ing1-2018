@@ -1520,14 +1520,11 @@ TerniLapilliObserver subclass: #TerniLapilliView
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliView methodsFor: 'initialization' stamp: 'd 11/10/2018 13:25:33'!
+!TerniLapilliView methodsFor: 'initialization' stamp: 'ps 11/10/2018 22:11:37'!
 initializeWith: aTerniLapilli
 
 	super initializeWith: aTerniLapilli .
-	board:= Array new: 9 withAll: ' '.
-	terniLapilli playerXPositions do:[:aPosition | self notifyXAt: aPosition ].
-	terniLapilli playerOPositions do:[:aPosition | self notifyOAt: aPosition ].
-	! !
+	board:= Array new: 9 withAll: ' '.! !
 
 
 !TerniLapilliView methodsFor: 'lines' stamp: 'ps 11/10/2018 21:21:02'!
