@@ -5,12 +5,12 @@ TestCase subclass: #ShoppingCartTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion1'!
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:01:50'!
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:14:34'!
 test01AlCrearUnCarritoEstaVacio
 
 	| aCart |
 	
-	aCart := ShoppingCart new.
+	aCart := ShoppingCart with: Bag new.
 	self assert: (aCart isEmpty).! !
 
 !ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:03:55'!
@@ -74,6 +74,21 @@ test06NoSePuedeAgregarUnLibroQueNoPertenezcaAlCatalogo
 		self assert: (anError messageText) equals: (ShoppingCart mensajeDeErrorLibroNoPerteneceAlCatalogo).
 	].! !
 
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:16:48'!
+test07AgregarUnLibroAlCarritoDebeReflejarseEnElListado
+
+	| aCart aCatalog |
+	
+	aCatalog := Bag new.
+	aCatalog add: '978-3-16-148410-1'.
+	aCatalog add: '978-3-16-148410-2'.
+	
+	aCart := ShoppingCart with: aCatalog.
+	aCart add: '978-3-16-148410-1'.
+	aCart add: '978-3-16-148410-1'.
+	aCart add: '978-3-16-148410-2'.
+	self assert: (aCart content) equals: (Bag with: '978-3-16-148410-1' with: '978-3-16-148410-1' with: '978-3-16-148410-2').! !
+
 
 !classDefinition: #ShoppingCart category: #'TusLibros-Iteracion1'!
 Object subclass: #ShoppingCart
@@ -99,15 +114,10 @@ content
 
 	^ books copy! !
 
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:07:46'!
-initialize
-
-	books := OrderedCollection new.! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:53:53'!
+!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:14:02'!
 initializeWith: aCatalog
 
-	books := OrderedCollection new.
+	books := Bag new.
 	catalog := aCatalog.! !
 
 !ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:07:25'!
