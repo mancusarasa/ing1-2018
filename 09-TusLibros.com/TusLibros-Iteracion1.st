@@ -46,7 +46,7 @@ test04UnLibroQueNoFueAgregadoAlCarritoNoEstaEnElCarrito
 	aCart add: aBook.
 	self deny: (aCart content includes: anotherBook).! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:06:27'!
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:26:11'!
 test05AlAgregarXVecesElMismoItemElCarritoLoContieneXVeces
 
 	| aCart aBook aCatalog |
@@ -54,10 +54,7 @@ test05AlAgregarXVecesElMismoItemElCarritoLoContieneXVeces
 	aBook := '978-3-16-148410-0'.
 	aCatalog := Bag with: aBook.
 	aCart := ShoppingCart with: aCatalog.
-	aCart add: aBook.
-	aCart add: aBook.
-	aCart add: aBook.
-	aCart add: aBook.
+	aCart add: 4 of: aBook.
 	self assert: (aCart quantityOf: aBook) equals: 4.! !
 
 !ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:06:46'!
@@ -89,6 +86,19 @@ test07AgregarUnLibroAlCarritoDebeReflejarseEnElListado
 	aCart add: '978-3-16-148410-2'.
 	self assert: (aCart content) equals: (Bag with: '978-3-16-148410-1' with: '978-3-16-148410-1' with: '978-3-16-148410-2').! !
 
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:28:59'!
+test08NoSePuedeAgregarUnaCantidadNegativaDeLibros
+
+	| aCart aBook aCatalog |
+	
+	aBook := '978-3-16-148410-0'.
+	aCatalog := Bag with: aBook.
+	aCart := ShoppingCart with: aCatalog.
+	self should: [aCart add: -1 of: aBook.] raise: Error withExceptionDo: [ :anError |
+		self assert: anError messageText equals: ShoppingCart mensajeDeErrorCantidadInvalida.
+		self deny: (aCart contains: aBook)
+	].! !
+
 
 !classDefinition: #ShoppingCart category: #'TusLibros-Iteracion1'!
 Object subclass: #ShoppingCart
@@ -97,12 +107,29 @@ Object subclass: #ShoppingCart
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion1'!
 
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:02:36'!
+!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:25:33'!
 add: aBook
 
-	catalog detect: [:aBookInTheCatalog | aBookInTheCatalog = aBook] ifNone: [self error: (self class mensajeDeErrorLibroNoPerteneceAlCatalogo)].
-	books add: aBook 
+	self add: 1 of: aBook 
 ! !
+
+!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:23:43'!
+add: anInteger of: aBook
+
+	self assertIsValidBook: aBook.
+	self assertIsValidQuantity: anInteger.
+	books add: aBook withOccurrences: anInteger 
+! !
+
+!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:24:00'!
+assertIsValidBook: aBook
+
+	catalog detect: [:aBookInTheCatalog | aBookInTheCatalog = aBook] ifNone: [self error: (self class mensajeDeErrorLibroNoPerteneceAlCatalogo)].! !
+
+!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:24:57'!
+assertIsValidQuantity: aQuantity
+
+	aQuantity strictlyPositive ifFalse: [ self error: self class mensajeDeErrorCantidadInvalida ]! !
 
 !ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:26:13'!
 contains: aBook
@@ -135,6 +162,11 @@ quantityOf: aBook
 !classDefinition: 'ShoppingCart class' category: #'TusLibros-Iteracion1'!
 ShoppingCart class
 	instanceVariableNames: ''!
+
+!ShoppingCart class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:24:51'!
+mensajeDeErrorCantidadInvalida
+
+	^ 'laCantidadIndicadaEsInvalida'! !
 
 !ShoppingCart class methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:54:39'!
 mensajeDeErrorLibroNoPerteneceAlCatalogo
