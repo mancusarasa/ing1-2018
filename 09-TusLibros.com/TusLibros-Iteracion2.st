@@ -5,27 +5,30 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 21:14:52'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 19:21:27'!
 test01HacerCheckoutDeUnCarritoVacioFalla
 
-	| aCashier aCart priceList aCreditCard preExpirationDate |
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales|
 
 	aCart := ShoppingCart with: Set new.
-	priceList := Dictionary new.
-	priceList at: 'unISBN' put: 3.
-	aCashier := Cashier withPriceList: priceList.
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 3.
+	aCashier := Cashier withCatalog: aCatalog.
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
+	
+	cashierSales:= aCashier sales.
 	
 	self should: [aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate] raise: Error withExceptionDo: [
 		:anError |
 		self assert: anError messageText equals: Cashier mensajeDeErrorCarritoVacio.
+		self assert: (aCashier sales) equals: cashierSales .
 	]! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:36:42'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 19:21:42'!
 test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 
-	| aCashier aCart aCatalog aCreditCard preExpirationDate |
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -34,18 +37,20 @@ test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 	aCart add: 'unISBN'.
 	aCart add: 3 of: 'otroISBN'.
 
-
-
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
 	
-	aCashier := Cashier withPriceList: aCatalog.
-	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 70.! !
+	aCashier := Cashier withCatalog: aCatalog.
+	cashierSales:= aCashier sales .
+		
+	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 70.
+	self deny: (aCashier sales = cashierSales).
+	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:37:12'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:41:27'!
 test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 
-	| aCashier aCart aCatalog aCreditCard preExpirationDate |
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -54,13 +59,17 @@ test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
 	
-	aCashier := Cashier withPriceList: aCatalog.
-	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 10.! !
+	aCashier := Cashier withCatalog: aCatalog.
+	cashierSales:= aCashier sales.
+		
+	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 10.
+	self deny: (aCashier sales = cashierSales).
+	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:47:23'!
+!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:41:58'!
 test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 
-	| aCashier aCart aCatalog aCreditCard postExpirationDate |
+	| aCashier aCart aCatalog aCreditCard postExpirationDate cashierSales |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -68,11 +77,14 @@ test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 	aCart add: 'unISBN'.
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	postExpirationDate := FixedGregorianDate year: 2016 month: March dayNumber: 3.
-	aCashier := Cashier withPriceList: aCatalog.
+	
+	aCashier := Cashier withCatalog: aCatalog.
+	cashierSales:= aCashier sales.
 	
 	self should: [aCashier checkout: aCart withCard: aCreditCard withCurrentDate: postExpirationDate] raise: Error withExceptionDo: [
 		:anError |
 		self assert: anError messageText equals: Cashier mensajeDeErrorTarjetaExpirada.
+		self assert: (aCashier sales) equals: cashierSales .
 	]! !
 
 
@@ -224,43 +236,88 @@ test08NoSePuedeAgregarUnaCantidadNegativaDeLibros
 		self deny: (aCart contains: aBook)
 	].! !
 
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:10:54'!
+test09ElValorDelContenidoDeUnCarritoVacioEs0
+
+	| aCart aBook aCatalog |
+	
+	aBook := '978-3-16-148410-0'.
+	aCatalog := Dictionary new.
+	aCatalog at: aBook put: 10.
+	aCart := ShoppingCart with: aCatalog.
+	
+	self assert: aCart contentPrice equals: 0.
+	! !
+
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:14:24'!
+test10ElValorDelContenidoDeUnCarritoConUnItemEsElPrecioDeEseItem
+
+	| aCart aCatalog |
+
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 15.
+	aCart := ShoppingCart with: aCatalog.
+	aCart add: 'unISBN'.
+
+	self assert: aCart contentPrice equals: 15.! !
+
+!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:13:15'!
+test11ElValorDelContenidoDeUnCarritoConMultiplesItemsEsLaSumaDeSusPrecios
+
+	| aCart aCatalog |
+
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 10.
+	aCatalog at: 'otroISBN' put: 20.
+	aCart := ShoppingCart with: aCatalog.
+	aCart add: 'unISBN'.
+	aCart add: 3 of: 'otroISBN'.
+
+	self assert: aCart contentPrice equals: 70.! !
+
 
 !classDefinition: #Cashier category: #'TusLibros-Iteracion2'!
 Object subclass: #Cashier
-	instanceVariableNames: 'priceList'
+	instanceVariableNames: 'catalog salesHistory'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 21:05:49'!
-assertCardNotExpired: aCreditCard onCurrentDate: aGregorianDate
-
-	(aCreditCard isExpiredAsFrom: aGregorianDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:59:35'!
-assertCartNotEmpty: aCart.
-
-	aCart isEmpty ifTrue: [self error: self class mensajeDeErrorCarritoVacio ] ! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:16:13'!
-calculateSumOfItemsPricesIn: aCart
-
-	^ aCart content inject: 0 into: [
-		:aSubTotal :anItem |
-		aSubTotal + priceList at: anItem.
-	].! !
-
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:55:28'!
+!Cashier methodsFor: 'checkout' stamp: 'd 11/16/2018 17:31:08'!
 checkout: aCart withCard: aCreditCard withCurrentDate: aFixedGregorianDate
 
 	self assertCartNotEmpty: aCart.
 	self assertCardNotExpired: aCreditCard onCurrentDate: aFixedGregorianDate.
-	^ self calculateSumOfItemsPricesIn: aCart.! !
+	salesHistory add: aCart.
+	
+	^ aCart contentPrice.! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:58:16'!
-initializeWithPriceList: aPriceList
 
-	priceList := aPriceList! !
+!Cashier methodsFor: 'observadores' stamp: 'd 11/16/2018 17:34:30'!
+lastSale
+	^ salesHistory last.! !
+
+!Cashier methodsFor: 'observadores' stamp: 'd 11/16/2018 17:34:20'!
+sales
+	^ salesHistory copy.! !
+
+
+!Cashier methodsFor: 'asserts' stamp: 'ps 11/15/2018 21:05:49'!
+assertCardNotExpired: aCreditCard onCurrentDate: aGregorianDate
+
+	(aCreditCard isExpiredAsFrom: aGregorianDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
+
+!Cashier methodsFor: 'asserts' stamp: 'ps 11/15/2018 18:59:35'!
+assertCartNotEmpty: aCart.
+
+	aCart isEmpty ifTrue: [self error: self class mensajeDeErrorCarritoVacio ] ! !
+
+
+!Cashier methodsFor: 'inicializacion' stamp: 'd 11/16/2018 17:30:35'!
+initializeWithCatalog: aCatalog
+
+	catalog := aCatalog.
+	salesHistory:= OrderedCollection new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -278,10 +335,10 @@ mensajeDeErrorTarjetaExpirada
 
 	^ 'laTarjetaEstaExpirada'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:55:00'!
-withPriceList: aPriceList 
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 16:46:04'!
+withCatalog: aCatalog 
 
-	^ self new initializeWithPriceList: aPriceList ! !
+	^ self new initializeWithCatalog: aCatalog! !
 
 
 !classDefinition: #CreditCard category: #'TusLibros-Iteracion2'!
@@ -291,17 +348,18 @@ Object subclass: #CreditCard
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:29:54'!
+!CreditCard methodsFor: 'observadores' stamp: 'ps 11/15/2018 20:43:08'!
+isExpiredAsFrom: aGregorianDate
+
+	^ expirationDate < aGregorianDate ! !
+
+
+!CreditCard methodsFor: 'inicializacion' stamp: 'ps 11/15/2018 20:29:54'!
 initializeOf: aClientName withNumber: aClientNumber withExpirationDate: aGregorianMonthOfYear
 
 	clientName := aClientName.
 	clientNumber := aClientNumber.
 	expirationDate := aGregorianMonthOfYear.! !
-
-!CreditCard methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:43:08'!
-isExpiredAsFrom: aGregorianDate
-
-	^ expirationDate < aGregorianDate ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -344,55 +402,66 @@ Object subclass: #ShoppingCart
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:25:33'!
+!ShoppingCart methodsFor: 'asserts' stamp: 'ps 11/16/2018 11:13:41'!
+assertIsValidBook: aBook
+
+	(catalog includesKey: aBook) ifFalse: [self error: (self class mensajeDeErrorLibroNoPerteneceAlCatalogo)]! !
+
+!ShoppingCart methodsFor: 'asserts' stamp: 'ps 11/15/2018 18:24:57'!
+assertIsValidQuantity: aQuantity
+
+	aQuantity strictlyPositive ifFalse: [ self error: self class mensajeDeErrorCantidadInvalida ]! !
+
+
+!ShoppingCart methodsFor: 'observadores' stamp: 'ps 11/16/2018 11:13:50'!
+contains: aBook
+
+	^ books includes: aBook! !
+
+!ShoppingCart methodsFor: 'observadores' stamp: 'ps 11/12/2018 20:11:21'!
+content
+
+	^ books copy! !
+
+!ShoppingCart methodsFor: 'observadores' stamp: 'd 11/16/2018 17:09:13'!
+contentPrice
+
+	^ books inject: 0 into: [
+		:aSubTotal :anItem |
+		aSubTotal + catalog at: anItem.
+	].! !
+
+!ShoppingCart methodsFor: 'observadores' stamp: 'ps 11/12/2018 20:07:25'!
+isEmpty
+
+	^ books isEmpty ! !
+
+!ShoppingCart methodsFor: 'observadores' stamp: 'ps 11/12/2018 20:40:48'!
+quantityOf: aBook
+
+	^ books occurrencesOf: aBook! !
+
+
+!ShoppingCart methodsFor: 'inicializacion' stamp: 'ps 11/12/2018 21:14:02'!
+initializeWith: aCatalog
+
+	books := Bag new.
+	catalog := aCatalog.! !
+
+
+!ShoppingCart methodsFor: 'acceso' stamp: 'ps 11/15/2018 18:25:33'!
 add: aBook
 
 	self add: 1 of: aBook 
 ! !
 
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:23:43'!
+!ShoppingCart methodsFor: 'acceso' stamp: 'ps 11/15/2018 18:23:43'!
 add: anInteger of: aBook
 
 	self assertIsValidBook: aBook.
 	self assertIsValidQuantity: anInteger.
 	books add: aBook withOccurrences: anInteger 
 ! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:13:41'!
-assertIsValidBook: aBook
-
-	(catalog includesKey: aBook) ifFalse: [self error: (self class mensajeDeErrorLibroNoPerteneceAlCatalogo)]! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:24:57'!
-assertIsValidQuantity: aQuantity
-
-	aQuantity strictlyPositive ifFalse: [ self error: self class mensajeDeErrorCantidadInvalida ]! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:13:50'!
-contains: aBook
-
-	^ books includes: aBook! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:11:21'!
-content
-
-	^ books copy! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 21:14:02'!
-initializeWith: aCatalog
-
-	books := Bag new.
-	catalog := aCatalog.! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:07:25'!
-isEmpty
-
-	^ books isEmpty ! !
-
-!ShoppingCart methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:40:48'!
-quantityOf: aBook
-
-	^ books occurrencesOf: aBook! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
