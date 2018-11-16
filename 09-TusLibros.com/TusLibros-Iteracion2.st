@@ -242,14 +242,6 @@ assertCartNotEmpty: aCart.
 
 	aCart isEmpty ifTrue: [self error: self class mensajeDeErrorCarritoVacio ] ! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:18:51'!
-assertEveryItemHasItsPrice: aCart
-
-	aCart content do: [
-		:anItem |
-		priceList at: anItem ifAbsent: [self error: self class mensajeDeErrorProductoSinPrecio].
-	]! !
-
 !Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:16:13'!
 calculateSumOfItemsPricesIn: aCart
 
@@ -258,11 +250,10 @@ calculateSumOfItemsPricesIn: aCart
 		aSubTotal + priceList at: anItem.
 	].! !
 
-!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 21:06:12'!
+!Cashier methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:55:28'!
 checkout: aCart withCard: aCreditCard withCurrentDate: aFixedGregorianDate
 
 	self assertCartNotEmpty: aCart.
-	self assertEveryItemHasItsPrice: aCart.
 	self assertCardNotExpired: aCreditCard onCurrentDate: aFixedGregorianDate.
 	^ self calculateSumOfItemsPricesIn: aCart.! !
 
@@ -277,35 +268,19 @@ initializeWithPriceList: aPriceList
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:27:11'!
-assertPriceListIsNotEmpty: aPriceList
-
-	aPriceList isEmpty ifTrue: [self error: self mensajeDeErrorListaDePreciosVacia]! !
-
 !Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:40:49'!
 mensajeDeErrorCarritoVacio
 
 	^ 'elCarritoEstaVacio'! !
-
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:26:30'!
-mensajeDeErrorListaDePreciosVacia
-
-	^ 'laListaDePreciosEstaVacia'! !
-
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:14:49'!
-mensajeDeErrorProductoSinPrecio
-
-	^ 'elItemNoTienePrecio'! !
 
 !Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 21:02:46'!
 mensajeDeErrorTarjetaExpirada
 
 	^ 'laTarjetaEstaExpirada'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 19:26:49'!
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:55:00'!
 withPriceList: aPriceList 
 
-	self assertPriceListIsNotEmpty: aPriceList.
 	^ self new initializeWithPriceList: aPriceList ! !
 
 
