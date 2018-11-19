@@ -5,7 +5,7 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 19:21:27'!
+!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 19:21:27'!
 test01HacerCheckoutDeUnCarritoVacioFalla
 
 	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales|
@@ -25,7 +25,7 @@ test01HacerCheckoutDeUnCarritoVacioFalla
 		self assert: (aCashier sales) equals: cashierSales .
 	]! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 19:21:42'!
+!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 19:21:42'!
 test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 
 	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
@@ -47,7 +47,7 @@ test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 	self deny: (aCashier sales = cashierSales).
 	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:41:27'!
+!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:41:27'!
 test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 
 	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
@@ -66,7 +66,7 @@ test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 	self deny: (aCashier sales = cashierSales).
 	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:41:58'!
+!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:41:58'!
 test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 
 	| aCashier aCart aCatalog aCreditCard postExpirationDate cashierSales |
@@ -95,7 +95,7 @@ TestCase subclass: #CreditCardTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:38:58'!
+!CreditCardTest methodsFor: 'tests' stamp: 'ps 11/15/2018 20:38:58'!
 test01NoSePuedeCrearUnaTarjetaConNombreVacio
 
 	self should: [CreditCard of: '' withNumber: '1111222233334444' withExpirationDate: (January ofYear: 2016)] raise: Error withExceptionDo: [
@@ -103,7 +103,7 @@ test01NoSePuedeCrearUnaTarjetaConNombreVacio
 		self assert: anError messageText equals: CreditCard mensajeDeErrorNombreDeClienteVacio.
 	]! !
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:41:58'!
+!CreditCardTest methodsFor: 'tests' stamp: 'ps 11/15/2018 20:41:58'!
 test02NoSePuedeCrearUnaTarjetaConNumeroConLongitudDistintaA16
 
 	self should: [CreditCard of: 'Juan Perez' withNumber: '' withExpirationDate: (January ofYear: 2016)] raise: Error withExceptionDo: [
@@ -111,7 +111,7 @@ test02NoSePuedeCrearUnaTarjetaConNumeroConLongitudDistintaA16
 		self assert: anError messageText equals: CreditCard mensajeDeErrorNumeroDeTarjetaInvalido.
 	]! !
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:53:25'!
+!CreditCardTest methodsFor: 'tests' stamp: 'ps 11/15/2018 20:53:25'!
 test03UnaTarjetaConFechaDeExpiracionDeFebreroNoEstaVencidaEnEnero
 
 	| aCreditCard  |
@@ -119,7 +119,7 @@ test03UnaTarjetaConFechaDeExpiracionDeFebreroNoEstaVencidaEnEnero
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	self deny: (aCreditCard isExpiredAsFrom: (FixedGregorianDate year: 2016 month: January dayNumber: 1)).! !
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:53:52'!
+!CreditCardTest methodsFor: 'tests' stamp: 'ps 11/15/2018 20:53:52'!
 test04UnaTarjetaConFechaDeExpiracionDeFebreroEstaVencidaEnMarzo
 
 	| aCreditCard  |
@@ -135,7 +135,7 @@ TestCase subclass: #ShoppingCartTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:11:07'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:11:07'!
 test01AlCrearUnCarritoEstaVacio
 
 	| aCart |
@@ -143,7 +143,7 @@ test01AlCrearUnCarritoEstaVacio
 	aCart := ShoppingCart with: Dictionary new.
 	self assert: (aCart isEmpty).! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:11:34'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:11:34'!
 test02AlAgregarUnLibroAlCarritoNoEstaVacio
 
 	| aCart aCatalog |
@@ -155,7 +155,7 @@ test02AlAgregarUnLibroAlCarritoNoEstaVacio
 	aCart add: '978-3-16-148410-0'.
 	self deny: (aCart isEmpty).! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:14:36'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:14:36'!
 test03AlAgregarUnLibroAlCarritoElLibroEstaEnElCarrito
 
 	| aCart aBook aCatalog|
@@ -168,7 +168,7 @@ test03AlAgregarUnLibroAlCarritoElLibroEstaEnElCarrito
 	aCart add: aBook.
 	self assert: (aCart contains: aBook).! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:15:13'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:15:13'!
 test04UnLibroQueNoFueAgregadoAlCarritoNoEstaEnElCarrito
 
 	| aCart aBook anotherBook aCatalog |
@@ -181,7 +181,7 @@ test04UnLibroQueNoFueAgregadoAlCarritoNoEstaEnElCarrito
 	aCart add: aBook.
 	self deny: (aCart content includes: anotherBook).! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:15:43'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:15:43'!
 test05AlAgregarXVecesElMismoItemElCarritoLoContieneXVeces
 
 	| aCart aBook aCatalog |
@@ -193,7 +193,7 @@ test05AlAgregarXVecesElMismoItemElCarritoLoContieneXVeces
 	aCart add: 4 of: aBook.
 	self assert: (aCart quantityOf: aBook) equals: 4.! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:16:10'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:16:10'!
 test06NoSePuedeAgregarUnLibroQueNoPertenezcaAlCatalogo
 
 	| aCart aCatalog |
@@ -206,7 +206,7 @@ test06NoSePuedeAgregarUnLibroQueNoPertenezcaAlCatalogo
 		self assert: (anError messageText) equals: (ShoppingCart mensajeDeErrorLibroNoPerteneceAlCatalogo).
 	].! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:16:37'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:16:37'!
 test07AgregarUnLibroAlCarritoDebeReflejarseEnElListado
 
 	| aCart aCatalog |
@@ -221,7 +221,7 @@ test07AgregarUnLibroAlCarritoDebeReflejarseEnElListado
 	aCart add: '978-3-16-148410-2'.
 	self assert: (aCart content) equals: (Bag with: '978-3-16-148410-1' with: '978-3-16-148410-1' with: '978-3-16-148410-2').! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'ps 11/16/2018 11:17:01'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'ps 11/16/2018 11:17:01'!
 test08NoSePuedeAgregarUnaCantidadNegativaDeLibros
 
 	| aCart aBook aCatalog |
@@ -236,7 +236,7 @@ test08NoSePuedeAgregarUnaCantidadNegativaDeLibros
 		self deny: (aCart contains: aBook)
 	].! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:10:54'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:10:54'!
 test09ElValorDelContenidoDeUnCarritoVacioEs0
 
 	| aCart aBook aCatalog |
@@ -249,7 +249,7 @@ test09ElValorDelContenidoDeUnCarritoVacioEs0
 	self assert: aCart contentPrice equals: 0.
 	! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:14:24'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:14:24'!
 test10ElValorDelContenidoDeUnCarritoConUnItemEsElPrecioDeEseItem
 
 	| aCart aCatalog |
@@ -261,7 +261,7 @@ test10ElValorDelContenidoDeUnCarritoConUnItemEsElPrecioDeEseItem
 
 	self assert: aCart contentPrice equals: 15.! !
 
-!ShoppingCartTest methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 17:13:15'!
+!ShoppingCartTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:13:15'!
 test11ElValorDelContenidoDeUnCarritoConMultiplesItemsEsLaSumaDeSusPrecios
 
 	| aCart aCatalog |
@@ -325,17 +325,18 @@ initializeWithCatalog: aCatalog
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:40:49'!
+!Cashier class methodsFor: 'mensajes de error' stamp: 'ps 11/15/2018 18:40:49'!
 mensajeDeErrorCarritoVacio
 
 	^ 'elCarritoEstaVacio'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 21:02:46'!
+!Cashier class methodsFor: 'mensajes de error' stamp: 'ps 11/15/2018 21:02:46'!
 mensajeDeErrorTarjetaExpirada
 
 	^ 'laTarjetaEstaExpirada'! !
 
-!Cashier class methodsFor: 'as yet unclassified' stamp: 'd 11/16/2018 16:46:04'!
+
+!Cashier class methodsFor: 'creacion' stamp: 'd 11/16/2018 16:46:04'!
 withCatalog: aCatalog 
 
 	^ self new initializeWithCatalog: aCatalog! !
@@ -367,32 +368,34 @@ initializeOf: aClientName withNumber: aClientNumber withExpirationDate: aGregori
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:41:15'!
-assertClientNumberHasTheAppropriateLength: aClientNumber
-
-	(aClientNumber size = 16) ifFalse: [self error: self mensajeDeErrorNumeroDeTarjetaInvalido]! !
-
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:41:09'!
-assertNameIsNotEmpty: aClientName
-
-	(aClientName size = 0) ifTrue: [self error: self mensajeDeErrorNombreDeClienteVacio].! !
-
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:33:20'!
-mensajeDeErrorNombreDeClienteVacio
-
-	^ 'elNombreDelClienteNoPuedeSerVacio'! !
-
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:35:07'!
-mensajeDeErrorNumeroDeTarjetaInvalido
-
-	^ 'elNumeroDeTarjetaDebeTener16Numeros'! !
-
-!CreditCard class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 20:33:50'!
+!CreditCard class methodsFor: 'creacion' stamp: 'ps 11/15/2018 20:33:50'!
 of: aClientName withNumber: aClientNumber withExpirationDate: aGregorianMonthOfYear
 
 	self assertNameIsNotEmpty: aClientName.
 	self assertClientNumberHasTheAppropriateLength: aClientNumber.
 	^ self new initializeOf: aClientName withNumber: aClientNumber withExpirationDate: aGregorianMonthOfYear! !
+
+
+!CreditCard class methodsFor: 'asserts' stamp: 'ps 11/15/2018 20:41:15'!
+assertClientNumberHasTheAppropriateLength: aClientNumber
+
+	(aClientNumber size = 16) ifFalse: [self error: self mensajeDeErrorNumeroDeTarjetaInvalido]! !
+
+!CreditCard class methodsFor: 'asserts' stamp: 'ps 11/15/2018 20:41:09'!
+assertNameIsNotEmpty: aClientName
+
+	(aClientName size = 0) ifTrue: [self error: self mensajeDeErrorNombreDeClienteVacio].! !
+
+
+!CreditCard class methodsFor: 'mensajes de error' stamp: 'ps 11/15/2018 20:33:20'!
+mensajeDeErrorNombreDeClienteVacio
+
+	^ 'elNombreDelClienteNoPuedeSerVacio'! !
+
+!CreditCard class methodsFor: 'mensajes de error' stamp: 'ps 11/15/2018 20:35:07'!
+mensajeDeErrorNumeroDeTarjetaInvalido
+
+	^ 'elNumeroDeTarjetaDebeTener16Numeros'! !
 
 
 !classDefinition: #ShoppingCart category: #'TusLibros-Iteracion2'!
@@ -469,17 +472,18 @@ add: anInteger of: aBook
 ShoppingCart class
 	instanceVariableNames: ''!
 
-!ShoppingCart class methodsFor: 'as yet unclassified' stamp: 'ps 11/15/2018 18:24:51'!
+!ShoppingCart class methodsFor: 'mensajes de error' stamp: 'ps 11/15/2018 18:24:51'!
 mensajeDeErrorCantidadInvalida
 
 	^ 'laCantidadIndicadaEsInvalida'! !
 
-!ShoppingCart class methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:54:39'!
+!ShoppingCart class methodsFor: 'mensajes de error' stamp: 'ps 11/12/2018 20:54:39'!
 mensajeDeErrorLibroNoPerteneceAlCatalogo
 
 	^ 'elLibroNoPerteneceAlCatalogo'! !
 
-!ShoppingCart class methodsFor: 'as yet unclassified' stamp: 'ps 11/12/2018 20:53:26'!
+
+!ShoppingCart class methodsFor: 'creacion' stamp: 'ps 11/12/2018 20:53:26'!
 with: aCatalog
 
 	^ self new initializeWith: aCatalog! !
