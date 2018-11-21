@@ -91,6 +91,52 @@ test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 		self assert: (aCashier sales) equals: cashierSales .
 	]! !
 
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 19:37:59'!
+test05HacerCheckoutDeUnCarritoVacioFallaSinInteractuarConElMerchantProcessor
+
+	| aCashier aCart aCatalog aCreditCard preExpirationDate aMerchantProcessor |
+
+	aCart := ShoppingCart with: Set new.
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 3.
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
+	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
+	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
+	
+	self should: [aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate] raise: Error withExceptionDo: [
+		:anError |
+		self assert: anError messageText equals: Cashier mensajeDeErrorCarritoVacio.
+		self assert: (aMerchantProcessor noTransactionsWereMade)
+	]! !
+
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 19:53:27'!
+test06HacerCheckoutDeUnCarritoConMultiplesItemsLlegaAlMerchantProcessor
+
+	| aCashier aCart aCatalog aCreditCard preExpirationDate aMerchantProcessor transactions |
+
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 10.
+	aCatalog at: 'otroISBN' put: 20.
+	aCart := ShoppingCart with: aCatalog.
+	aCart add: 'unISBN'.
+	aCart add: 3 of: 'otroISBN'.
+
+	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
+	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
+	
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
+		
+	aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate.
+	transactions := aMerchantProcessor transactions.
+	self deny: aMerchantProcessor noTransactionsWereMade.
+	self assert: transactions size equals: 1.
+
+	self assert: (transactions at: 1) creditCardNumber equals: '1111222233334444'.
+	self assert: (transactions at: 1) creditCardOwner equals: 'Juan Perez'.
+	self assert: (transactions at: 1) transactionAmount equals: 70.! !
+
 
 !classDefinition: #CreditCardTest category: #'TusLibros-Iteracion2'!
 TestCase subclass: #CreditCardTest
@@ -368,6 +414,16 @@ initializeOf: aClientName withNumber: aClientNumber withExpirationDate: aGregori
 	clientNumber := aClientNumber.
 	expirationDate := aGregorianMonthOfYear.! !
 
+!CreditCard methodsFor: 'inicializacion' stamp: 'ps 11/21/2018 19:54:13'!
+number
+
+	^ clientNumber! !
+
+!CreditCard methodsFor: 'inicializacion' stamp: 'ps 11/21/2018 19:55:08'!
+owner
+
+	^ clientName! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CreditCard class' category: #'TusLibros-Iteracion2'!
@@ -419,13 +475,70 @@ debit: anAmount fromCreditCard: aCreditCard
 
 !classDefinition: #SimulatedMerchantProcessor category: #'TusLibros-Iteracion2'!
 MerchantProcessorInterface subclass: #SimulatedMerchantProcessor
-	instanceVariableNames: ''
+	instanceVariableNames: 'transactions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 15:45:43'!
-debit: anAmount fromCreditCard: aCreditCard! !
+!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:49:57'!
+debit: anAmount fromCreditCard: aCreditCard
+
+	transactions add: (MerchantProcessorTransaction ofAmount: anAmount withCreditCard: aCreditCard)! !
+
+!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:47:05'!
+initialize
+
+	transactions := OrderedCollection new.! !
+
+!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:47:54'!
+noTransactionsWereMade
+
+	^ transactions isEmpty ! !
+
+!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:46:27'!
+transactions
+
+	^ transactions copy! !
+
+
+!classDefinition: #MerchantProcessorTransaction category: #'TusLibros-Iteracion2'!
+Object subclass: #MerchantProcessorTransaction
+	instanceVariableNames: 'amount creditCard'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Iteracion2'!
+
+!MerchantProcessorTransaction methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:53:51'!
+creditCardNumber
+
+	^ creditCard number! !
+
+!MerchantProcessorTransaction methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:54:38'!
+creditCardOwner
+
+	^ creditCard owner! !
+
+!MerchantProcessorTransaction methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:52:12'!
+initializeWithAmount: anAmount withCreditCard: aCreditCard
+
+	amount := anAmount.
+	creditCard := aCreditCard.! !
+
+!MerchantProcessorTransaction methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:55:40'!
+transactionAmount
+
+	^ amount! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'MerchantProcessorTransaction class' category: #'TusLibros-Iteracion2'!
+MerchantProcessorTransaction class
+	instanceVariableNames: ''!
+
+!MerchantProcessorTransaction class methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 19:50:54'!
+ofAmount: anAmount withCreditCard: aCreditCard
+
+	^ self new initializeWithAmount: anAmount withCreditCard: aCreditCard! !
 
 
 !classDefinition: #ShoppingCart category: #'TusLibros-Iteracion2'!
