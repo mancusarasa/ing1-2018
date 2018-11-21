@@ -5,15 +5,16 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 19:21:27'!
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 16:02:31'!
 test01HacerCheckoutDeUnCarritoVacioFalla
 
-	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales|
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales aMerchantProcessor |
 
 	aCart := ShoppingCart with: Set new.
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 3.
-	aCashier := Cashier withCatalog: aCatalog.
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
 	
@@ -25,10 +26,10 @@ test01HacerCheckoutDeUnCarritoVacioFalla
 		self assert: (aCashier sales) equals: cashierSales .
 	]! !
 
-!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 19:21:42'!
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 16:03:05'!
 test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 
-	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales aMerchantProcessor |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -40,17 +41,18 @@ test02HacerCheckoutDeUnCarritoConMultiplesItemsDevuelveLaSumaDeSusPrecios
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
 	
-	aCashier := Cashier withCatalog: aCatalog.
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
 	cashierSales:= aCashier sales .
 		
 	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 70.
 	self deny: (aCashier sales = cashierSales).
 	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:41:27'!
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 16:03:19'!
 test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 
-	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales |
+	| aCashier aCart aCatalog aCreditCard preExpirationDate cashierSales aMerchantProcessor |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -59,17 +61,18 @@ test03HacerCheckoutDeUnCarritoConUnItemDevuelveElValorDelItem
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	preExpirationDate := FixedGregorianDate year: 2016 month: January dayNumber: 3.
 	
-	aCashier := Cashier withCatalog: aCatalog.
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
 	cashierSales:= aCashier sales.
 		
 	self assert: (aCashier checkout: aCart withCard: aCreditCard withCurrentDate: preExpirationDate) equals: 10.
 	self deny: (aCashier sales = cashierSales).
 	self assert: aCashier lastSale equals: aCart .! !
 
-!CashierTest methodsFor: 'tests' stamp: 'd 11/16/2018 17:41:58'!
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 16:03:42'!
 test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 
-	| aCashier aCart aCatalog aCreditCard postExpirationDate cashierSales |
+	| aCashier aCart aCatalog aCreditCard postExpirationDate cashierSales aMerchantProcessor |
 
 	aCatalog := Dictionary new.
 	aCatalog at: 'unISBN' put: 10.
@@ -78,7 +81,8 @@ test04HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFalla
 	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
 	postExpirationDate := FixedGregorianDate year: 2016 month: March dayNumber: 3.
 	
-	aCashier := Cashier withCatalog: aCatalog.
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
 	cashierSales:= aCashier sales.
 	
 	self should: [aCashier checkout: aCart withCard: aCreditCard withCurrentDate: postExpirationDate] raise: Error withExceptionDo: [
@@ -278,17 +282,18 @@ test11ElValorDelContenidoDeUnCarritoConMultiplesItemsEsLaSumaDeSusPrecios
 
 !classDefinition: #Cashier category: #'TusLibros-Iteracion2'!
 Object subclass: #Cashier
-	instanceVariableNames: 'catalog salesHistory'
+	instanceVariableNames: 'catalog salesHistory merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion2'!
 
-!Cashier methodsFor: 'checkout' stamp: 'd 11/16/2018 17:31:08'!
+!Cashier methodsFor: 'checkout' stamp: 'ps 11/21/2018 15:54:28'!
 checkout: aCart withCard: aCreditCard withCurrentDate: aFixedGregorianDate
 
 	self assertCartNotEmpty: aCart.
 	self assertCardNotExpired: aCreditCard onCurrentDate: aFixedGregorianDate.
 	salesHistory add: aCart.
+	merchantProcessor debit: aCart contentPrice fromCreditCard: aCreditCard.
 	
 	^ aCart contentPrice.! !
 
@@ -313,10 +318,11 @@ assertCartNotEmpty: aCart.
 	aCart isEmpty ifTrue: [self error: self class mensajeDeErrorCarritoVacio ] ! !
 
 
-!Cashier methodsFor: 'inicializacion' stamp: 'd 11/16/2018 17:30:35'!
-initializeWithCatalog: aCatalog
+!Cashier methodsFor: 'inicializacion' stamp: 'ps 11/21/2018 15:49:49'!
+initializeWithCatalog: aCatalog operatingWith: aMerchantProcessorInterface
 
 	catalog := aCatalog.
+	merchantProcessor := aMerchantProcessorInterface.
 	salesHistory:= OrderedCollection new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -336,10 +342,10 @@ mensajeDeErrorTarjetaExpirada
 	^ 'laTarjetaEstaExpirada'! !
 
 
-!Cashier class methodsFor: 'creacion' stamp: 'd 11/16/2018 16:46:04'!
-withCatalog: aCatalog 
+!Cashier class methodsFor: 'creacion' stamp: 'ps 11/21/2018 15:47:30'!
+withCatalog: aCatalog operatingWith: aMerchantProcessorInterface
 
-	^ self new initializeWithCatalog: aCatalog! !
+	^ self new initializeWithCatalog: aCatalog operatingWith: aMerchantProcessorInterface! !
 
 
 !classDefinition: #CreditCard category: #'TusLibros-Iteracion2'!
@@ -396,6 +402,30 @@ mensajeDeErrorNombreDeClienteVacio
 mensajeDeErrorNumeroDeTarjetaInvalido
 
 	^ 'elNumeroDeTarjetaDebeTener16Numeros'! !
+
+
+!classDefinition: #MerchantProcessorInterface category: #'TusLibros-Iteracion2'!
+Object subclass: #MerchantProcessorInterface
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Iteracion2'!
+
+!MerchantProcessorInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 15:45:20'!
+debit: anAmount fromCreditCard: aCreditCard
+
+	self subclassResponsibility ! !
+
+
+!classDefinition: #SimulatedMerchantProcessor category: #'TusLibros-Iteracion2'!
+MerchantProcessorInterface subclass: #SimulatedMerchantProcessor
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Iteracion2'!
+
+!SimulatedMerchantProcessor methodsFor: 'as yet unclassified' stamp: 'ps 11/21/2018 15:45:43'!
+debit: anAmount fromCreditCard: aCreditCard! !
 
 
 !classDefinition: #ShoppingCart category: #'TusLibros-Iteracion2'!
