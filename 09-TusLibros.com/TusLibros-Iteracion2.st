@@ -137,6 +137,28 @@ test06HacerCheckoutDeUnCarritoConMultiplesItemsLlegaAlMerchantProcessor
 	self assert: (transactions at: 1) creditCardOwner equals: 'Juan Perez'.
 	self assert: (transactions at: 1) transactionAmount equals: 70.! !
 
+!CashierTest methodsFor: 'tests' stamp: 'ps 11/21/2018 19:57:21'!
+test07HacerCheckoutDeUnCarritoConUnaTarjetaVencidaFallaSinLlegarAlMerchantProcessor
+
+	| aCashier aCart aCatalog aCreditCard postExpirationDate cashierSales aMerchantProcessor |
+
+	aCatalog := Dictionary new.
+	aCatalog at: 'unISBN' put: 10.
+	aCart := ShoppingCart with: aCatalog.
+	aCart add: 'unISBN'.
+	aCreditCard := CreditCard of: 'Juan Perez' withNumber: '1111222233334444' withExpirationDate: (February ofYear: 2016).
+	postExpirationDate := FixedGregorianDate year: 2016 month: March dayNumber: 3.
+	
+	aMerchantProcessor := SimulatedMerchantProcessor new.
+	aCashier := Cashier withCatalog: aCatalog operatingWith: aMerchantProcessor.
+	cashierSales:= aCashier sales.
+	
+	self should: [aCashier checkout: aCart withCard: aCreditCard withCurrentDate: postExpirationDate] raise: Error withExceptionDo: [
+		:anError |
+		self assert: anError messageText equals: Cashier mensajeDeErrorTarjetaExpirada.
+		self assert: aMerchantProcessor noTransactionsWereMade.
+	]! !
+
 
 !classDefinition: #CreditCardTest category: #'TusLibros-Iteracion2'!
 TestCase subclass: #CreditCardTest
