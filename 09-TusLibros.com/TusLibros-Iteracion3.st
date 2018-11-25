@@ -339,6 +339,23 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 14:29:37'!
+test07CheckoutCartWithExpiredCreditCardShoulsFail
+
+	| aRestInterface usersPasswords cartId |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new).
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
+
+	self should: [aRestInterface checkoutCart: cartId ofClientId: 'unCliente' withCreditCard: testObjectsFactory expiredCreditCard on: testObjectsFactory today]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaExpirada.
+	].! !
+
 
 !InternalRestInterfaceTest methodsFor: 'setup' stamp: 'ps 11/22/2018 20:52:10'!
 setUp
@@ -598,25 +615,23 @@ Object subclass: #InternalRestInterface
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:29:28'!
-registerNewCart: aCart
+!InternalRestInterface methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:22:25'!
+initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry
 
-	^ cartRegistry registerNewCart: aCart! !
-
-!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:27:18'!
-validateUser: aClient andPassword: aPassword
-
-	| password |
-
-	password := userPassword at: aClient ifAbsent: [self error: self class mensajeDeErrorUsuarioInexistente ].
-	password = aPassword ifFalse: [self error: self class mensajeDeErrorContraseñaIncorrecta ].
-! !
+	catalog := aCatalog.
+	userPassword := aUserPasswordDictionary.
+	cartRegistry := aCartRegistry.! !
 
 
 !InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:36:51'!
 add: anAmount of: anISBN toCart: aCartId 
 
 	(cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) add: anAmount of: anISBN.! !
+
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 14:16:31'!
+checkoutCart: aCartId ofClientId: aClientId withCreditCard: aCreditCard on: aDate
+
+	self assertCreditCard: aCreditCard isNotExpiredOn: aDate! !
 
 !InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:29:13'!
 createNewCartFor: aClient withPassword: aPassword
@@ -631,12 +646,24 @@ listItemsOf: aCartId
 	^ (cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) content! !
 
 
-!InternalRestInterface methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:22:25'!
-initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 14:19:44'!
+assertCreditCard: aCreditCard isNotExpiredOn: aDate
 
-	catalog := aCatalog.
-	userPassword := aUserPasswordDictionary.
-	cartRegistry := aCartRegistry.! !
+	(aCreditCard isExpiredOn: aDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
+
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:29:28'!
+registerNewCart: aCart
+
+	^ cartRegistry registerNewCart: aCart! !
+
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:27:18'!
+validateUser: aClient andPassword: aPassword
+
+	| password |
+
+	password := userPassword at: aClient ifAbsent: [self error: self class mensajeDeErrorUsuarioInexistente ].
+	password = aPassword ifFalse: [self error: self class mensajeDeErrorContraseñaIncorrecta ].
+! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -644,22 +671,28 @@ initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry
 InternalRestInterface class
 	instanceVariableNames: ''!
 
-!InternalRestInterface class methodsFor: 'as yet unclassified' stamp: 'ps 11/22/2018 20:01:01'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 20:01:01'!
 mensajeDeErrorContraseñaIncorrecta
 
 	^ 'laContraseñaEsIncorrecta'! !
 
-!InternalRestInterface class methodsFor: 'as yet unclassified' stamp: 'ps 11/22/2018 21:06:35'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 21:06:35'!
 mensajeDeErrorIdDeCarritoInvalido
 
 	^ 'elIdDeCarritoEsInvalido'! !
 
-!InternalRestInterface class methodsFor: 'as yet unclassified' stamp: 'ps 11/22/2018 19:56:56'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/25/2018 14:25:46'!
+mensajeDeErrorTarjetaExpirada
+
+	^ 'laTarjetaEstaExpirada'! !
+
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 19:56:56'!
 mensajeDeErrorUsuarioInexistente
 
 	^ 'elUsuarioNoExiste'! !
 
-!InternalRestInterface class methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:20:52'!
+
+!InternalRestInterface class methodsFor: 'instance creation' stamp: 'ps 11/25/2018 12:20:52'!
 withCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry
 
 	^ self new initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry ! !
