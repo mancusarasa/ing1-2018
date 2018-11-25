@@ -253,12 +253,7 @@ TestCase subclass: #InternalRestInterfaceTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/22/2018 20:52:10'!
-setUp
-
-	testObjectsFactory := StoreTestObjectsFactory new.! !
-
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:23:05'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:23:05'!
 test01ANonExistentUserCantCreateACart
 
 	| aRestInterface |
@@ -271,7 +266,7 @@ test01ANonExistentUserCantCreateACart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorUsuarioInexistente.
 	]! !
 
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:23:30'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:23:30'!
 test02AnExistentUserWithTheWrongPasswordCantCreateANewCart
 
 	| aRestInterface usersPasswords |
@@ -286,7 +281,7 @@ test02AnExistentUserWithTheWrongPasswordCantCreateANewCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorContraseñaIncorrecta.
 	]! !
 
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:23:56'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:23:56'!
 test03ANewCartIsEmptyWhenCreated
 
 	| aRestInterface usersPasswords cartId cartItems |
@@ -298,7 +293,7 @@ test03ANewCartIsEmptyWhenCreated
 	cartItems := aRestInterface listItemsOf: cartId.
 	self assert: cartItems equals: OrderedCollection new.! !
 
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:35:05'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:35:05'!
 test04ItemsAddedToACartAreListedInItsItems
 
 	| aRestInterface usersPasswords cartId cartItems |
@@ -311,7 +306,7 @@ test04ItemsAddedToACartAreListedInItsItems
 	cartItems := aRestInterface listItemsOf: cartId.
 	self assert: cartItems equals: (OrderedCollection with: testObjectsFactory itemSellByTheStore)! !
 
-!InternalRestInterfaceTest methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:37:06'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:37:06'!
 test05CannotAddItemsToAnInvalidCart
 
 	| aRestInterface usersPasswords cartId |
@@ -326,6 +321,29 @@ test05CannotAddItemsToAnInvalidCart
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
+
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 12:42:11'!
+test06CannotListItemsOfAnInvalidCart
+
+	| aRestInterface usersPasswords cartId |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new).
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
+	
+	self should: [aRestInterface listItemsOf: cartId+1]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
+	].! !
+
+
+!InternalRestInterfaceTest methodsFor: 'setup' stamp: 'ps 11/22/2018 20:52:10'!
+setUp
+
+	testObjectsFactory := StoreTestObjectsFactory new.! !
 
 
 !classDefinition: #Cart category: #'TusLibros-Iteracion3'!
@@ -424,30 +442,32 @@ Object subclass: #CartRegistry
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!CartRegistry methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:13:53'!
+!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:13:53'!
 getCartWithId: aCartId ifAbsent: aBlockClosure
 
 	^ carts at: aCartId ifAbsent: [aBlockClosure value]! !
 
-!CartRegistry methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:09:30'!
-getNextId
-
-	nextId := nextId + 1.
-	^ nextId - 1! !
-
-!CartRegistry methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:31:17'!
-initialize
-
-	carts := Dictionary new.
-	nextId := 1.! !
-
-!CartRegistry methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:10:52'!
+!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:10:52'!
 registerNewCart: aCart
 
 	| cartId |
 	cartId := self getNextId.
 	carts at: cartId put: aCart.
 	^ cartId! !
+
+
+!CartRegistry methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:31:17'!
+initialize
+
+	carts := Dictionary new.
+	nextId := 1.! !
+
+
+!CartRegistry methodsFor: 'private' stamp: 'ps 11/25/2018 12:09:30'!
+getNextId
+
+	nextId := nextId + 1.
+	^ nextId - 1! !
 
 
 !classDefinition: #Cashier category: #'TusLibros-Iteracion3'!
@@ -578,36 +598,12 @@ Object subclass: #InternalRestInterface
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:36:51'!
-add: anAmount of: anISBN toCart: aCartId 
-
-	(cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) add: anAmount of: anISBN.! !
-
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:29:13'!
-createNewCartFor: aClient withPassword: aPassword
-
-	self validateUser: aClient andPassword: aPassword.
-	^ self registerNewCart: (Cart acceptingItemsOf: catalog).
-! !
-
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:22:25'!
-initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry
-
-	catalog := aCatalog.
-	userPassword := aUserPasswordDictionary.
-	cartRegistry := aCartRegistry.! !
-
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:39:00'!
-listItemsOf: aCartId 
-
-	^ (cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) content! !
-
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:29:28'!
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:29:28'!
 registerNewCart: aCart
 
 	^ cartRegistry registerNewCart: aCart! !
 
-!InternalRestInterface methodsFor: 'as yet unclassified' stamp: 'ps 11/25/2018 12:27:18'!
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:27:18'!
 validateUser: aClient andPassword: aPassword
 
 	| password |
@@ -615,6 +611,32 @@ validateUser: aClient andPassword: aPassword
 	password := userPassword at: aClient ifAbsent: [self error: self class mensajeDeErrorUsuarioInexistente ].
 	password = aPassword ifFalse: [self error: self class mensajeDeErrorContraseñaIncorrecta ].
 ! !
+
+
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:36:51'!
+add: anAmount of: anISBN toCart: aCartId 
+
+	(cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) add: anAmount of: anISBN.! !
+
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:29:13'!
+createNewCartFor: aClient withPassword: aPassword
+
+	self validateUser: aClient andPassword: aPassword.
+	^ self registerNewCart: (Cart acceptingItemsOf: catalog).
+! !
+
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:39:00'!
+listItemsOf: aCartId 
+
+	^ (cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) content! !
+
+
+!InternalRestInterface methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:22:25'!
+initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry
+
+	catalog := aCatalog.
+	userPassword := aUserPasswordDictionary.
+	cartRegistry := aCartRegistry.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
