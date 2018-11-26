@@ -364,7 +364,7 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 21:37:14'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 17:07:20'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
 	| aRestInterface usersPasswords cartId clientPurchases saleItems |
@@ -377,8 +377,7 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: '2020-01' fromOwner: 'unCliente' on: testObjectsFactory today.
 	clientPurchases := aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password'.
 	self assert: clientPurchases size equals: 1.
-	" todo: sacar este 10 horrendo harcodeado de aca"
-	self assert: (clientPurchases at: 1) total equals: 10.
+	self assert: (clientPurchases at: 1) total equals: testObjectsFactory itemSellByTheStorePrice.
 	saleItems := (clientPurchases at:1) items.
 	self assert: saleItems size equals: 1.
 	self assert: (saleItems at: 1) equals: testObjectsFactory itemSellByTheStore.
