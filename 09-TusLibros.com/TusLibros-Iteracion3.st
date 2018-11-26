@@ -339,7 +339,7 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:34:44'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 20:53:51'!
 test07CheckoutCartWithExpiredCreditCardShouldFail
 
 	| aRestInterface usersPasswords cartId ccn cco cced |
@@ -359,13 +359,13 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaExpirada.
-		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') isEmpty.
+		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:37:01'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 20:55:44'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
-	| aRestInterface usersPasswords cartId clientPurchases saleItems |
+	| aRestInterface usersPasswords cartId clientPurchases |
 	
 	usersPasswords := Dictionary new.
 	usersPasswords at: 'unCliente' put: 'password'.
@@ -374,14 +374,11 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.
 	clientPurchases := aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password'.
-	self assert: clientPurchases size equals: 1.
-	self assert: (clientPurchases at: 1) total equals: testObjectsFactory itemSellByTheStorePrice.
-	saleItems := (clientPurchases at:1) items.
-	self assert: saleItems size equals: 1.
-	self assert: (saleItems at: 1) equals: testObjectsFactory itemSellByTheStore.
+	self assert: clientPurchases total equals: testObjectsFactory itemSellByTheStorePrice.
+	self assert: (clientPurchases items occurrencesOf: testObjectsFactory itemSellByTheStore) equals: 1.
 ! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:20:14'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 20:56:25'!
 test09CantAddItemsFromAnExpiredCart
 
 	| aRestInterface usersPasswords cartId clock |
@@ -396,7 +393,7 @@ test09CantAddItemsFromAnExpiredCart
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
-		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') size equals: 0.
+		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items size equals: 0.
 	].! !
 
 !InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:21:15'!
@@ -802,11 +799,20 @@ listItemsOf: aCartId
 	self checkCartIsStillValid: aCartId.
 	^ cart content! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 15:04:06'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 20:52:10'!
 listPurchasesBy: aClient withPassword: aPassword
 
+	| items total |
+
 	self validateUser: aClient andPassword: aPassword.
-	^ purchasesByClient at: aClient ifAbsent: [OrderedCollection new]! !
+	items := Bag new.
+	total := 0.
+	(purchasesByClient at: aClient ifAbsent: [OrderedCollection new]) do: [
+		:aSale |
+		items addAll: aSale items.
+		total := total + aSale total.
+	].
+	^ PurchasesSummary withItems: items andTotalAmount: total.! !
 
 !InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 17:29:08'!
 updateLastUseTimeOf: cartId
@@ -874,6 +880,41 @@ mensajeDeErrorUsuarioInexistente
 withCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry through: aMerchantProcessor withClock: aClock
 
 	^ self new initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry through: aMerchantProcessor withClock: aClock! !
+
+
+!classDefinition: #PurchasesSummary category: #'TusLibros-Iteracion3'!
+Object subclass: #PurchasesSummary
+	instanceVariableNames: 'total items'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Iteracion3'!
+
+!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:11'!
+initializeWithItems: aBag andTotalAmount: totalAmount
+
+	items := aBag.
+	total := totalAmount.! !
+
+!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:15'!
+items
+
+	^ items copy! !
+
+!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:23'!
+total
+
+	^ total! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PurchasesSummary class' category: #'TusLibros-Iteracion3'!
+PurchasesSummary class
+	instanceVariableNames: 'items total'!
+
+!PurchasesSummary class methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 19:26:13'!
+withItems: aDictionary andTotalAmount: totalAmount
+
+	^ self new initializeWithItems: aDictionary andTotalAmount: totalAmount ! !
 
 
 !classDefinition: #Sale category: #'TusLibros-Iteracion3'!
