@@ -339,10 +339,10 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 15:51:46'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 21:22:15'!
 test07CheckoutCartWithExpiredCreditCardShouldFail
 
-	| aRestInterface usersPasswords cartId |
+	| aRestInterface usersPasswords cartId ccn cco cced |
 	
 	usersPasswords := Dictionary new.
 	usersPasswords at: 'unCliente' put: 'password'.
@@ -350,14 +350,21 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 
-	self should: [aRestInterface checkoutCart: cartId ofClientId: 'unCliente' withCreditCard: testObjectsFactory expiredCreditCard on: testObjectsFactory today]
+	" month := Month readFrom: <year>-<month> (1982-04)"
+
+	self should: [
+		ccn := 123.
+		cco := 'unCliente'.
+		cced := '2014-01'.
+		aRestInterface checkoutCart: cartId withCreditCardNumber: ccn withExpirationDate: cced fromOwner: cco on: testObjectsFactory today.
+	]
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaExpirada.
 		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 16:01:08'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 21:25:05'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
 	| aRestInterface usersPasswords cartId clientPurchases |
@@ -367,11 +374,12 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self.
 	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
-	aRestInterface checkoutCart: cartId ofClientId: 'unCliente' withCreditCard: testObjectsFactory notExpiredCreditCard on: testObjectsFactory today.
+	aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: '2020-01' fromOwner: 'unCliente' on: testObjectsFactory today.
 	clientPurchases := aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password'.
 	self assert: clientPurchases size equals: 1.
 	" todo: sacar este 10 horrendo harcodeado de aca"
-	self assert: (clientPurchases at: 1) total equals: 10! !
+	self assert: (clientPurchases at: 1) total equals: 10
+! !
 
 
 !InternalRestInterfaceTest methodsFor: 'setup' stamp: 'ps 11/22/2018 20:52:10'!
@@ -601,7 +609,7 @@ creditCardHasNoCreditErrorMessage
 
 !classDefinition: #CreditCard category: #'TusLibros-Iteracion3'!
 Object subclass: #CreditCard
-	instanceVariableNames: 'expiration'
+	instanceVariableNames: 'expiration owner number'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
@@ -617,6 +625,13 @@ initializeExpiringOn: aMonth
 	
 	expiration := aMonth ! !
 
+!CreditCard methodsFor: 'initialization' stamp: 'ps 11/25/2018 19:57:11'!
+initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
+	
+	expiration := aMonth.
+	owner := aCreditCardOwner.
+	number := aCreditCardNumber.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CreditCard class' category: #'TusLibros-Iteracion3'!
@@ -627,6 +642,11 @@ CreditCard class
 expiringOn: aMonth 
 	
 	^self new initializeExpiringOn: aMonth! !
+
+!CreditCard class methodsFor: 'instance creation' stamp: 'ps 11/25/2018 19:56:25'!
+expiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
+	
+	^self new initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber! !
 
 
 !classDefinition: #InternalRestInterface category: #'TusLibros-Iteracion3'!
@@ -651,22 +671,20 @@ add: anAmount of: anISBN toCart: aCartId
 
 	(cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]) add: anAmount of: anISBN.! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 15:54:36'!
-checkoutCart: aCartId ofClientId: aClientId withCreditCard: aCreditCard on: aDate
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 21:21:25'!
+checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate: aFormattedDate fromOwner: aCreditCardOwner on: aDate
 
-	| cashier salesBook clientPurchases |
-	
-	self assertCreditCard: aCreditCard isNotExpiredOn: aDate.
-	cart := cartRegistry getCartWithId: aCartId ifAbsent: [].
+	| cashier salesBook clientPurchases creditCard |
+
+	creditCard := CreditCard expiringOn: (aFormattedDate asMonth) withOwner: aCreditCardOwner withNumber: aCreditCardNumber.
+	self assertCreditCard: creditCard isNotExpiredOn: aDate.
+	cart := cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido].
 	salesBook := OrderedCollection new.
-	cashier := Cashier toCheckout: cart charging: aCreditCard throught: merchantProcessor on: aDate registeringOn: salesBook.
+	cashier := Cashier toCheckout: cart charging: creditCard throught: merchantProcessor on: aDate registeringOn: salesBook.
 	cashier checkOut.
-	clientPurchases := purchasesByClient at: aClientId ifAbsent: [OrderedCollection new].
+	clientPurchases := purchasesByClient at: aCreditCardOwner ifAbsent: [OrderedCollection new].
 	clientPurchases add: (salesBook at: 1).
-	purchasesByClient at: aClientId put: clientPurchases.
-
-
-! !
+	purchasesByClient at: aCreditCardOwner put: clientPurchases.! !
 
 !InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 12:29:13'!
 createNewCartFor: aClient withPassword: aPassword
