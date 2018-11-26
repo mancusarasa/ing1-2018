@@ -339,7 +339,7 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:07:29'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:34:44'!
 test07CheckoutCartWithExpiredCreditCardShouldFail
 
 	| aRestInterface usersPasswords cartId ccn cco cced |
@@ -350,12 +350,10 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 
-	" month := Month readFrom: <year>-<month> (1982-04)"
-
 	self should: [
 		ccn := 123.
 		cco := 'unCliente'.
-		cced := '2014-01'.
+		cced := testObjectsFactory expiredCreditCardFormattedString.
 		aRestInterface checkoutCart: cartId withCreditCardNumber: ccn withExpirationDate: cced fromOwner: cco on: testObjectsFactory today.
 	]
 	raise: Error
@@ -364,7 +362,7 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:07:40'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:37:01'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
 	| aRestInterface usersPasswords cartId clientPurchases saleItems |
@@ -374,7 +372,7 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
-	aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: '2020-01' fromOwner: 'unCliente' on: testObjectsFactory today.
+	aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.
 	clientPurchases := aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password'.
 	self assert: clientPurchases size equals: 1.
 	self assert: (clientPurchases at: 1) total equals: testObjectsFactory itemSellByTheStorePrice.
@@ -382,6 +380,60 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	self assert: saleItems size equals: 1.
 	self assert: (saleItems at: 1) equals: testObjectsFactory itemSellByTheStore.
 ! !
+
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:20:14'!
+test09CantAddItemsFromAnExpiredCart
+
+	| aRestInterface usersPasswords cartId clock |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	clock := testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: clock.
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	clock advanceTimeIn: (3 hours).	
+	self should: [aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
+		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') size equals: 0.
+	].! !
+
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:21:15'!
+test10CantListItemsFromAnExpiredCart
+
+	| aRestInterface usersPasswords cartId clock |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	clock := testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: clock.
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
+	clock advanceTimeIn: (3 hours).
+	self should: [aRestInterface listItemsOf: cartId]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
+	].! !
+
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/26/2018 18:38:16'!
+test11CheckoutAnExpiredCart
+
+	| aRestInterface usersPasswords cartId clock |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	clock := testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: clock.
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
+	clock advanceTimeIn: (3 hours).
+	self should: [aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
+	].! !
 
 
 !InternalRestInterfaceTest methodsFor: 'setup' stamp: 'ps 11/22/2018 20:52:10'!
@@ -714,7 +766,7 @@ add: anAmount of: anISBN toCart: aCartId
 	cart add: anAmount of: anISBN.
 	self updateLastUseTimeOf: aCartId.! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/25/2018 21:21:25'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 18:12:12'!
 checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate: aFormattedDate fromOwner: aCreditCardOwner on: aDate
 
 	| cashier salesBook clientPurchases creditCard |
@@ -722,6 +774,7 @@ checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate
 	creditCard := CreditCard expiringOn: (aFormattedDate asMonth) withOwner: aCreditCardOwner withNumber: aCreditCardNumber.
 	self assertCreditCard: creditCard isNotExpiredOn: aDate.
 	cart := cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido].
+	self checkCartIsStillValid: aCartId.
 	salesBook := OrderedCollection new.
 	cashier := Cashier toCheckout: cart charging: creditCard throught: merchantProcessor on: aDate registeringOn: salesBook.
 	cashier checkOut.
@@ -766,10 +819,10 @@ assertCreditCard: aCreditCard isNotExpiredOn: aDate
 
 	(aCreditCard isExpiredOn: aDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
 
-!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 18:04:21'!
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 18:17:52'!
 checkCartIsStillValid: aCartId
 
-	((cartLastUseTime at: aCartId) - (clock currentTime)) < (30 minutes) ifFalse: [self error: self class mensajeDeErrorCarritoExpirado]! !
+	((clock currentTime) - (cartLastUseTime at: aCartId)) < (30 minutes) ifFalse: [self error: self class mensajeDeErrorCarritoExpirado]! !
 
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:29:28'!
 registerNewCart: aCart
@@ -912,10 +965,28 @@ expiredCreditCard
 	
 	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1)! !
 
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'ps 11/26/2018 18:35:47'!
+expiredCreditCardFormattedString
+	
+	| year month |
+	
+	year := ((GregorianMonthOfYear current year number)-2) asString.
+	month := GregorianMonthOfYear current month number asString.
+	^ year , '-' , month! !
+
 !StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:36'!
 notExpiredCreditCard
 	
 	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1)! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'ps 11/26/2018 18:36:37'!
+notExpiredCreditCardFormattedString
+	
+	| year month |
+	
+	year := ((GregorianMonthOfYear current year number)+2) asString.
+	month := GregorianMonthOfYear current month number asString.
+	^ year , '-' , month! !
 
 
 !StoreTestObjectsFactory methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:37'!
