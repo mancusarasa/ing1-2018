@@ -364,10 +364,10 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 21:25:05'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 11/25/2018 21:37:14'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
-	| aRestInterface usersPasswords cartId clientPurchases |
+	| aRestInterface usersPasswords cartId clientPurchases saleItems |
 	
 	usersPasswords := Dictionary new.
 	usersPasswords at: 'unCliente' put: 'password'.
@@ -378,7 +378,10 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	clientPurchases := aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password'.
 	self assert: clientPurchases size equals: 1.
 	" todo: sacar este 10 horrendo harcodeado de aca"
-	self assert: (clientPurchases at: 1) total equals: 10
+	self assert: (clientPurchases at: 1) total equals: 10.
+	saleItems := (clientPurchases at:1) items.
+	self assert: saleItems size equals: 1.
+	self assert: (saleItems at: 1) equals: testObjectsFactory itemSellByTheStore.
 ! !
 
 
@@ -529,10 +532,10 @@ calculateTotal
 	total := cart total.
 	! !
 
-!Cashier methodsFor: 'checkout - private' stamp: 'HernanWilkinson 6/17/2013 19:07'!
+!Cashier methodsFor: 'checkout - private' stamp: 'ps 11/25/2018 21:33:16'!
 createSale
 
-	^ Sale of: total
+	^ Sale of: total withItems: cart content
 ! !
 
 !Cashier methodsFor: 'checkout - private' stamp: 'HernanWilkinson 6/17/2013 19:06'!
@@ -759,10 +762,15 @@ withCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartReg
 
 !classDefinition: #Sale category: #'TusLibros-Iteracion3'!
 Object subclass: #Sale
-	instanceVariableNames: 'total'
+	instanceVariableNames: 'total items'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
+
+!Sale methodsFor: 'total' stamp: 'ps 11/25/2018 21:34:09'!
+items
+	
+	^ items copy! !
 
 !Sale methodsFor: 'total' stamp: 'HernanWilkinson 6/17/2013 18:48'!
 total
@@ -775,6 +783,12 @@ initializeTotal: aTotal
 
 	total := aTotal ! !
 
+!Sale methodsFor: 'initialization' stamp: 'ps 11/25/2018 21:32:18'!
+initializeTotal: aTotal withItems: anOrderedCollection
+
+	total := aTotal. 
+	items := anOrderedCollection.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Sale class' category: #'TusLibros-Iteracion3'!
@@ -786,6 +800,12 @@ of: aTotal
 
 	"should assert total is not negative or 0!!"
 	^self new initializeTotal: aTotal ! !
+
+!Sale class methodsFor: 'instance creation' stamp: 'ps 11/25/2018 21:32:38'!
+of: aTotal withItems: anOrderedCollection
+
+	"should assert total is not negative or 0!!"
+	^self new initializeTotal: aTotal withItems: anOrderedCollection! !
 
 
 !classDefinition: #StoreTestObjectsFactory category: #'TusLibros-Iteracion3'!
