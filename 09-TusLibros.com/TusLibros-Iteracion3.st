@@ -248,7 +248,7 @@ debit: anAmount from: aCreditCard
 
 !classDefinition: #InternalRestInterfaceTest category: #'TusLibros-Iteracion3'!
 TestCase subclass: #InternalRestInterfaceTest
-	instanceVariableNames: 'testObjectsFactory'
+	instanceVariableNames: 'testObjectsFactory debitBehavior'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
@@ -432,15 +432,41 @@ test11CheckoutAnExpiredCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
 	].! !
 
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 11/30/2018 18:31:29'!
+test12CannotCheckoutWhenTheCreditCardHasNoCredit
 
-!InternalRestInterfaceTest methodsFor: 'setup' stamp: 'ps 11/22/2018 20:52:10'!
+	| aRestInterface usersPasswords cartId |
+	
+	debitBehavior := [ :anAmount :aCreditCard | self error: InternalRestInterface mensajeDeErrorTarjetaSinFondos ].
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
+		
+	self should: 
+		[aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory 		notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.]  
+	raise: Error
+	withExceptionDo: 
+		[:anError |
+			self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaSinFondos.
+			self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items isEmpty.
+		].
+ 	
+! !
+
+
+!InternalRestInterfaceTest methodsFor: 'setup' stamp: 'd 11/30/2018 18:09:14'!
 setUp
 
-	testObjectsFactory := StoreTestObjectsFactory new.! !
+	testObjectsFactory := StoreTestObjectsFactory new.
+	debitBehavior := [ :anAmount :aCreditCard | ]! !
 
 
-!InternalRestInterfaceTest methodsFor: 'merchant processor protocol' stamp: 'ps 11/25/2018 15:53:14'!
-debit: anAmount from: aCreditCard! !
+!InternalRestInterfaceTest methodsFor: 'merchant processor protocol' stamp: 'd 11/30/2018 18:10:01'!
+debit: anAmount from: aCreditCard 
+
+	^debitBehavior value: anAmount value: aCreditCard ! !
 
 
 !classDefinition: #Cart category: #'TusLibros-Iteracion3'!
@@ -763,7 +789,7 @@ add: anAmount of: anISBN toCart: aCartId
 	cart add: anAmount of: anISBN.
 	self updateLastUseTimeOf: aCartId.! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 18:12:12'!
+!InternalRestInterface methodsFor: 'services' stamp: 'd 11/30/2018 16:35:50'!
 checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate: aFormattedDate fromOwner: aCreditCardOwner on: aDate
 
 	| cashier salesBook clientPurchases creditCard |
@@ -772,6 +798,7 @@ checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate
 	self assertCreditCard: creditCard isNotExpiredOn: aDate.
 	cart := cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido].
 	self checkCartIsStillValid: aCartId.
+	self checkCartIsNotEmpty: aCartId.
 	salesBook := OrderedCollection new.
 	cashier := Cashier toCheckout: cart charging: creditCard throught: merchantProcessor on: aDate registeringOn: salesBook.
 	cashier checkOut.
@@ -790,7 +817,7 @@ createNewCartFor: aClient withPassword: aPassword
 	^ cartId
 ! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 18:06:54'!
+!InternalRestInterface methodsFor: 'services' stamp: 'd 11/30/2018 15:49:39'!
 listItemsOf: aCartId 
 
 	| cart |
@@ -825,6 +852,11 @@ assertCreditCard: aCreditCard isNotExpiredOn: aDate
 
 	(aCreditCard isExpiredOn: aDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
 
+!InternalRestInterface methodsFor: 'private' stamp: 'd 11/30/2018 16:36:47'!
+checkCartIsNotEmpty: aCartId
+
+	(cart isEmpty) ifTrue: [self error: self class mensajeDeErrorCarritoVacio]! !
+
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 18:17:52'!
 checkCartIsStillValid: aCartId
 
@@ -855,6 +887,11 @@ mensajeDeErrorCarritoExpirado
 
 	^ 'elCarritoYaExpiro'! !
 
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 16:34:08'!
+mensajeDeErrorCarritoVacio
+
+	^ 'elCarritoEstaVacio'! !
+
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 20:01:01'!
 mensajeDeErrorContraseñaIncorrecta
 
@@ -869,6 +906,11 @@ mensajeDeErrorIdDeCarritoInvalido
 mensajeDeErrorTarjetaExpirada
 
 	^ 'laTarjetaEstaExpirada'! !
+
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 18:20:25'!
+mensajeDeErrorTarjetaSinFondos
+
+	^ 'laTarjetaNoTieneFondos'! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 19:56:56'!
 mensajeDeErrorUsuarioInexistente
