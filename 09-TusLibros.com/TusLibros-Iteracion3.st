@@ -896,25 +896,10 @@ listPurchasesBy: aClient withPassword: aPassword
 	^ self summarizePurchasesBy: aClient ! !
 
 
-!InternalRestInterface methodsFor: 'private' stamp: 'd 11/30/2018 16:36:47'!
-checkCartIsNotEmpty: aCartId
-
-	(cart isEmpty) ifTrue: [self error: self class mensajeDeErrorCarritoVacio]! !
-
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 18:17:52'!
 checkCartIsStillValid: aCartId
 
 	((clock currentTime) - (cartLastUseTime at: aCartId)) < (30 minutes) ifFalse: [self error: self class mensajeDeErrorCarritoExpirado]! !
-
-!InternalRestInterface methodsFor: 'private' stamp: 'd 11/30/2018 18:47:39'!
-checkIsValidItem: anItem
-
-	(catalog includesKey: anItem) ifFalse: [ self error: self class mensajeDeErrorItemInvalido ].! !
-
-!InternalRestInterface methodsFor: 'private' stamp: 'd 11/30/2018 18:54:31'!
-checkIsValidQuantity: aQuantity
-
-	aQuantity strictlyPositive ifFalse: [ self error: self class mensajeDeErrorCantidadInvalida].! !
 
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:29:28'!
 registerNewCart: aCart
