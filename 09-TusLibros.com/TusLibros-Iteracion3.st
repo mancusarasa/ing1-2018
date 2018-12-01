@@ -253,12 +253,12 @@ TestCase subclass: #InternalRestInterfaceTest
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:45:35'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test01ANonExistentUserCantCreateACart
 
 	| aRestInterface |
 	
-	aRestInterface := InternalRestInterface withCatalog: (testObjectsFactory defaultCatalog) andAuthInfo: (testObjectsFactory defaultAuthInfo) andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: (testObjectsFactory defaultCatalog) andAuthInfo: (testObjectsFactory defaultAuthInfo) andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	self should: [
 		aRestInterface createNewCartFor: 'ClienteInexistente' withPassword: 'password'. 
 	]
@@ -266,12 +266,12 @@ test01ANonExistentUserCantCreateACart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorUsuarioInexistente.
 	]! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:47:04'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test02AnExistentUserWithTheWrongPasswordCantCreateANewCart
 
 	| aRestInterface |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	self should: [
 		aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: 'passworddddd'. 
 	]
@@ -279,35 +279,35 @@ test02AnExistentUserWithTheWrongPasswordCantCreateANewCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorContraseñaIncorrecta.
 	]! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:47:52'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test03ANewCartIsEmptyWhenCreated
 
 	| aRestInterface cartId cartItems |
 	
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	cartItems := aRestInterface listItemsOf: cartId.
 	self assert: cartItems equals: OrderedCollection new.! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:51:08'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test04ItemsAddedToACartAreListedInItsItems
 
 	| aRestInterface usersPasswords cartId cartItems |
 	
 	usersPasswords := Dictionary new.
 	usersPasswords at: 'unCliente' put: 'password'.
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	cartItems := aRestInterface listItemsOf: cartId.
 	self assert: cartItems equals: (OrderedCollection with: testObjectsFactory itemSellByTheStore)! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:53:45'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test05CannotAddItemsToAnInvalidCart
 
 	| aRestInterface cartId |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword .
 
 	self should: [aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId +1]
@@ -316,12 +316,12 @@ test05CannotAddItemsToAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:57:06'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test06CannotListItemsOfAnInvalidCart
 
 	| aRestInterface cartId |
 	
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	
@@ -331,12 +331,12 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:27:03'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test07CheckoutCartWithExpiredCreditCardShouldFail
 
 	| aRestInterface cartId ccn cco cced |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 
@@ -352,12 +352,12 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:00:21'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 
 	| aRestInterface cartId clientPurchases |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	aRestInterface checkoutCart: cartId withCreditCardNumber: testObjectsFactory validCreditCardNumber withExpirationDate: testObjectsFactory notExpiredCreditCardFormattedString fromOwner: testObjectsFactory defaultClient on: testObjectsFactory today.
@@ -366,13 +366,13 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	self assert: (clientPurchases items occurrencesOf: testObjectsFactory itemSellByTheStore) equals: 1.
 ! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:29:25'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test09CantAddItemsFromAnExpiredCart
 
 	| aRestInterface cartId clock |
 
 	clock := testObjectsFactory createClockOnCurrentTime.
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: clock.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: clock.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	clock advanceTimeIn: (3 hours).
 	self should: [aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId]
@@ -382,13 +382,13 @@ test09CantAddItemsFromAnExpiredCart
 		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:04:11'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test10CantListItemsFromAnExpiredCart
 
 	| aRestInterface cartId clock |
 	
 	clock := testObjectsFactory createClockOnCurrentTime.
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: clock.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: clock.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient  withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	clock advanceTimeIn: (3 hours).
@@ -398,13 +398,13 @@ test10CantListItemsFromAnExpiredCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:05:05'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test11CheckoutAnExpiredCartShouldFail
 
 	| aRestInterface cartId clock |
 
 	clock := testObjectsFactory createClockOnCurrentTime.
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: clock.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: clock.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 	clock advanceTimeIn: (3 hours).
@@ -414,13 +414,13 @@ test11CheckoutAnExpiredCartShouldFail
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:17'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test12CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| aRestInterface cartId |
 	
 	debitBehavior := [ :anAmount :aCreditCard | self error: InternalRestInterface mensajeDeErrorTarjetaSinFondos].
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 		
@@ -435,12 +435,12 @@ test12CannotCheckoutWhenTheCreditCardHasNoCredit
  	
 ! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:08:52'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test13CannotAddItemsThatArentPresentInTheCatalog
 
 	| aRestInterface cartId |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 
 	self should: [aRestInterface add: 1 of: 'bondiola ISBN' toCart: cartId]
@@ -449,12 +449,12 @@ test13CannotAddItemsThatArentPresentInTheCatalog
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorItemInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:29:03'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test14CannotAddAnInvalidAmountOfItems
 
 	| aRestInterface cartId |
 	
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 
 	self should: [aRestInterface add: -1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId]
@@ -463,12 +463,12 @@ test14CannotAddAnInvalidAmountOfItems
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCantidadInvalida.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:55'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test15CannotCheckoutAnEmptyCart
 
 	| aRestInterface cartId ccn cco cced |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 
 	self should: [
@@ -483,12 +483,12 @@ test15CannotCheckoutAnEmptyCart
 		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:41'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 12/1/2018 18:12:11'!
 test16CannotCheckoutACartWithAnInvalidCreditCardNumber
 
 	| aRestInterface cartId ccn cco cced |
 
-	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (RestInterfaceCartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
 	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
 
 	self should: [
@@ -606,52 +606,6 @@ invalidQuantityErrorMessage
 	^'Invalid number of items'! !
 
 
-!classDefinition: #CartRegistry category: #'TusLibros-Iteracion3'!
-Object subclass: #CartRegistry
-	instanceVariableNames: 'carts nextId'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros-Iteracion3'!
-
-!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 12/1/2018 13:28:05'!
-getCartWithId: aCartId
-
-	^ carts at: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]! !
-
-!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:10:52'!
-registerNewCart: aCart
-
-	| cartId |
-	cartId := self getNextId.
-	carts at: cartId put: aCart.
-	^ cartId! !
-
-
-!CartRegistry methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:31:17'!
-initialize
-
-	carts := Dictionary new.
-	nextId := 1.! !
-
-
-!CartRegistry methodsFor: 'private' stamp: 'ps 11/25/2018 12:09:30'!
-getNextId
-
-	nextId := nextId + 1.
-	^ nextId - 1! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'CartRegistry class' category: #'TusLibros-Iteracion3'!
-CartRegistry class
-	instanceVariableNames: ''!
-
-!CartRegistry class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:28:19'!
-mensajeDeErrorIdDeCarritoInvalido
-
-	^ 'elIdDeCarritoEsInvalido'! !
-
-
 !classDefinition: #Cashier category: #'TusLibros-Iteracion3'!
 Object subclass: #Cashier
 	instanceVariableNames: 'cart salesBook merchantProcessor creditCard total'
@@ -743,6 +697,42 @@ creditCardHasNoCreditErrorMessage
 	^'Credit card has no credit'! !
 
 
+!classDefinition: #ClientPurchasesSummary category: #'TusLibros-Iteracion3'!
+Object subclass: #ClientPurchasesSummary
+	instanceVariableNames: 'total items'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros-Iteracion3'!
+
+!ClientPurchasesSummary methodsFor: 'initialization' stamp: 'ps 11/26/2018 20:54:11'!
+initializeWithItems: aBag andTotalAmount: totalAmount
+
+	items := aBag.
+	total := totalAmount.! !
+
+
+!ClientPurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:15'!
+items
+
+	^ items copy! !
+
+!ClientPurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:23'!
+total
+
+	^ total! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ClientPurchasesSummary class' category: #'TusLibros-Iteracion3'!
+ClientPurchasesSummary class
+	instanceVariableNames: 'items total'!
+
+!ClientPurchasesSummary class methodsFor: 'instance creation' stamp: 'ps 11/26/2018 19:26:13'!
+withItems: aDictionary andTotalAmount: totalAmount
+
+	^ self new initializeWithItems: aDictionary andTotalAmount: totalAmount ! !
+
+
 !classDefinition: #CreditCard category: #'TusLibros-Iteracion3'!
 Object subclass: #CreditCard
 	instanceVariableNames: 'expiration owner number'
@@ -756,11 +746,6 @@ isExpiredOn: aDate
 	^expiration start < (Month month: aDate monthIndex year: aDate yearNumber) start ! !
 
 
-!CreditCard methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-initializeExpiringOn: aMonth 
-	
-	expiration := aMonth ! !
-
 !CreditCard methodsFor: 'initialization' stamp: 'ps 12/1/2018 16:20:04'!
 initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
 
@@ -773,11 +758,6 @@ initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCard
 !classDefinition: 'CreditCard class' category: #'TusLibros-Iteracion3'!
 CreditCard class
 	instanceVariableNames: ''!
-
-!CreditCard class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-expiringOn: aMonth 
-	
-	^self new initializeExpiringOn: aMonth! !
 
 !CreditCard class methodsFor: 'instance creation' stamp: 'ps 12/1/2018 16:20:21'!
 expiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
@@ -934,7 +914,7 @@ registerNewCart
 	self updateLastUseTimeOf: cartId.
 	^ cartId! !
 
-!InternalRestInterface methodsFor: 'private' stamp: 'ps 12/1/2018 14:03:15'!
+!InternalRestInterface methodsFor: 'private' stamp: 'd 12/1/2018 17:33:06'!
 summarizePurchasesBy: aClient
 
 	| items total |
@@ -946,7 +926,7 @@ summarizePurchasesBy: aClient
 		items addAll: aSale items.
 		total := total + aSale total.
 	].
-	^ PurchasesSummary withItems: items andTotalAmount: total.! !
+	^ ClientPurchasesSummary withItems: items andTotalAmount: total.! !
 
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 17:29:08'!
 updateLastUseTimeOf: cartId
@@ -988,10 +968,10 @@ mensajeDeErrorContraseñaIncorrecta
 
 	^ 'laContraseñaEsIncorrecta'! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:30:48'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 12/1/2018 18:12:11'!
 mensajeDeErrorIdDeCarritoInvalido
 
-	^ CartRegistry mensajeDeErrorIdDeCarritoInvalido! !
+	^ RestInterfaceCartRegistry mensajeDeErrorIdDeCarritoInvalido! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:09:51'!
 mensajeDeErrorItemInvalido
@@ -1025,40 +1005,50 @@ withCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartReg
 	^ self new initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry: aCartRegistry through: aMerchantProcessor withClock: aClock! !
 
 
-!classDefinition: #PurchasesSummary category: #'TusLibros-Iteracion3'!
-Object subclass: #PurchasesSummary
-	instanceVariableNames: 'total items'
+!classDefinition: #RestInterfaceCartRegistry category: #'TusLibros-Iteracion3'!
+Object subclass: #RestInterfaceCartRegistry
+	instanceVariableNames: 'carts nextId'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!PurchasesSummary methodsFor: 'initialization' stamp: 'ps 11/26/2018 20:54:11'!
-initializeWithItems: aBag andTotalAmount: totalAmount
+!RestInterfaceCartRegistry methodsFor: 'cart accessing' stamp: 'ps 12/1/2018 13:28:05'!
+getCartWithId: aCartId
 
-	items := aBag.
-	total := totalAmount.! !
+	^ carts at: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]! !
+
+!RestInterfaceCartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:10:52'!
+registerNewCart: aCart
+
+	| cartId |
+	cartId := self getNextId.
+	carts at: cartId put: aCart.
+	^ cartId! !
 
 
-!PurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:15'!
-items
+!RestInterfaceCartRegistry methodsFor: 'initialization' stamp: 'ps 11/25/2018 12:31:17'!
+initialize
 
-	^ items copy! !
+	carts := Dictionary new.
+	nextId := 1.! !
 
-!PurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:23'!
-total
 
-	^ total! !
+!RestInterfaceCartRegistry methodsFor: 'private' stamp: 'ps 11/25/2018 12:09:30'!
+getNextId
+
+	nextId := nextId + 1.
+	^ nextId - 1! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'PurchasesSummary class' category: #'TusLibros-Iteracion3'!
-PurchasesSummary class
-	instanceVariableNames: 'items total'!
+!classDefinition: 'RestInterfaceCartRegistry class' category: #'TusLibros-Iteracion3'!
+RestInterfaceCartRegistry class
+	instanceVariableNames: ''!
 
-!PurchasesSummary class methodsFor: 'instance creation' stamp: 'ps 11/26/2018 19:26:13'!
-withItems: aDictionary andTotalAmount: totalAmount
+!RestInterfaceCartRegistry class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:28:19'!
+mensajeDeErrorIdDeCarritoInvalido
 
-	^ self new initializeWithItems: aDictionary andTotalAmount: totalAmount ! !
+	^ 'elIdDeCarritoEsInvalido'! !
 
 
 !classDefinition: #Sale category: #'TusLibros-Iteracion3'!
@@ -1079,11 +1069,6 @@ total
 	^ total! !
 
 
-!Sale methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:47'!
-initializeTotal: aTotal
-
-	total := aTotal ! !
-
 !Sale methodsFor: 'initialization' stamp: 'ps 11/25/2018 21:32:18'!
 initializeTotal: aTotal withItems: anOrderedCollection
 
@@ -1096,16 +1081,9 @@ initializeTotal: aTotal withItems: anOrderedCollection
 Sale class
 	instanceVariableNames: ''!
 
-!Sale class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:47'!
-of: aTotal
-
-	"should assert total is not negative or 0!!"
-	^self new initializeTotal: aTotal ! !
-
-!Sale class methodsFor: 'instance creation' stamp: 'ps 11/25/2018 21:32:38'!
+!Sale class methodsFor: 'instance creation' stamp: 'd 12/1/2018 18:14:26'!
 of: aTotal withItems: anOrderedCollection
 
-	"should assert total is not negative or 0!!"
 	^self new initializeTotal: aTotal withItems: anOrderedCollection! !
 
 
@@ -1145,10 +1123,10 @@ defaultCatalog
 		yourself ! !
 
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:37'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'd 12/1/2018 18:00:22'!
 expiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1)! !
+	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1) withOwner: 'cacho' withNumber: self validCreditCardNumber.! !
 
 !StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'ps 11/26/2018 18:35:47'!
 expiredCreditCardFormattedString
@@ -1164,10 +1142,10 @@ invalidCreditCardNumber
 	
 	^ '1234'! !
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:36'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'd 12/1/2018 18:00:29'!
 notExpiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1)! !
+	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1) withOwner: 'cacho' withNumber: self validCreditCardNumber.! !
 
 !StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'ps 11/26/2018 18:36:37'!
 notExpiredCreditCardFormattedString
