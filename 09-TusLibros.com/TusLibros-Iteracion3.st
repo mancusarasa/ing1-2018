@@ -797,17 +797,18 @@ Object subclass: #CustomizableClock
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!CustomizableClock methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 17:51:42'!
+!CustomizableClock methodsFor: 'time' stamp: 'ps 11/26/2018 17:51:42'!
 advanceTimeIn: aDelta
 
 	currentTime := currentTime + aDelta! !
 
-!CustomizableClock methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 18:00:31'!
+!CustomizableClock methodsFor: 'time' stamp: 'ps 11/26/2018 18:00:31'!
 currentTime
 
 	^ currentTime! !
 
-!CustomizableClock methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 17:51:06'!
+
+!CustomizableClock methodsFor: 'initialization' stamp: 'ps 11/26/2018 17:51:06'!
 initializeOnCurrentTime: aDateAndTime 
 
 	currentTime := aDateAndTime ! !
@@ -818,7 +819,7 @@ initializeOnCurrentTime: aDateAndTime
 CustomizableClock class
 	instanceVariableNames: ''!
 
-!CustomizableClock class methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 17:59:55'!
+!CustomizableClock class methodsFor: 'instance creation' stamp: 'ps 11/26/2018 17:59:55'!
 onCurrentTime: aDateAndTime
 
 	^ self new initializeOnCurrentTime: aDateAndTime ! !
@@ -1013,18 +1014,19 @@ Object subclass: #PurchasesSummary
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:11'!
+!PurchasesSummary methodsFor: 'initialization' stamp: 'ps 11/26/2018 20:54:11'!
 initializeWithItems: aBag andTotalAmount: totalAmount
 
 	items := aBag.
 	total := totalAmount.! !
 
-!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:15'!
+
+!PurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:15'!
 items
 
 	^ items copy! !
 
-!PurchasesSummary methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 20:54:23'!
+!PurchasesSummary methodsFor: 'accessing' stamp: 'ps 11/26/2018 20:54:23'!
 total
 
 	^ total! !
@@ -1035,7 +1037,7 @@ total
 PurchasesSummary class
 	instanceVariableNames: 'items total'!
 
-!PurchasesSummary class methodsFor: 'as yet unclassified' stamp: 'ps 11/26/2018 19:26:13'!
+!PurchasesSummary class methodsFor: 'instance creation' stamp: 'ps 11/26/2018 19:26:13'!
 withItems: aDictionary andTotalAmount: totalAmount
 
 	^ self new initializeWithItems: aDictionary andTotalAmount: totalAmount ! !
