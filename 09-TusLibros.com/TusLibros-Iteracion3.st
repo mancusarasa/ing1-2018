@@ -785,15 +785,16 @@ Object subclass: #CustomizableClock
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!CustomizableClock methodsFor: 'time' stamp: 'ps 11/26/2018 17:51:42'!
-advanceTimeIn: aDelta
-
-	currentTime := currentTime + aDelta! !
-
-!CustomizableClock methodsFor: 'time' stamp: 'ps 11/26/2018 18:00:31'!
+!CustomizableClock methodsFor: 'accessing' stamp: 'ps 11/26/2018 18:00:31'!
 currentTime
 
 	^ currentTime! !
+
+
+!CustomizableClock methodsFor: 'time manipulation' stamp: 'ps 11/26/2018 17:51:42'!
+advanceTimeIn: aDelta
+
+	currentTime := currentTime + aDelta! !
 
 
 !CustomizableClock methodsFor: 'initialization' stamp: 'ps 11/26/2018 17:51:06'!
@@ -1058,12 +1059,12 @@ Object subclass: #Sale
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!Sale methodsFor: 'total' stamp: 'ps 11/25/2018 21:34:09'!
+!Sale methodsFor: 'accessing' stamp: 'ps 11/25/2018 21:34:09'!
 items
 	
 	^ items copy! !
 
-!Sale methodsFor: 'total' stamp: 'HernanWilkinson 6/17/2013 18:48'!
+!Sale methodsFor: 'accessing' stamp: 'HernanWilkinson 6/17/2013 18:48'!
 total
 	
 	^ total! !
