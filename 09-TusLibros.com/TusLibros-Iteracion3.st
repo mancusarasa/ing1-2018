@@ -10,7 +10,7 @@ test01NewCartsAreCreatedEmpty
 
 	self assert: testObjectsFactory createCart isEmpty! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'ps 12/1/2018 13:06:56'!
 test02CanNotAddItemsThatDoNotBelongToStore
 
 	| cart |
@@ -21,7 +21,7 @@ test02CanNotAddItemsThatDoNotBelongToStore
 		should: [ cart add: testObjectsFactory itemNotSellByTheStore ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidItemErrorMessage.
+			self assert: anError messageText = cart class invalidItemErrorMessage.
 			self assert: cart isEmpty ]! !
 
 !CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
@@ -34,7 +34,7 @@ test03AfterAddingAnItemTheCartIsNotEmptyAnymore
 	cart add: testObjectsFactory itemSellByTheStore.
 	self deny: cart isEmpty ! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'ps 12/1/2018 13:07:08'!
 test04CanNotAddNonPositiveNumberOfItems
 
 	| cart |
@@ -45,10 +45,10 @@ test04CanNotAddNonPositiveNumberOfItems
 		should: [cart add: 0 of: testObjectsFactory itemSellByTheStore ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidQuantityErrorMessage.
+			self assert: anError messageText = cart class invalidQuantityErrorMessage.
 			self assert: cart isEmpty ]! !
 
-!CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:10'!
+!CartTest methodsFor: 'tests' stamp: 'ps 12/1/2018 13:07:13'!
 test05CanNotAddMoreThanOneItemNotSellByTheStore
 
 	| cart |
@@ -59,7 +59,7 @@ test05CanNotAddMoreThanOneItemNotSellByTheStore
 		should: [cart add: 2 of: testObjectsFactory itemNotSellByTheStore  ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = cart invalidItemErrorMessage.
+			self assert: anError messageText = cart class invalidItemErrorMessage.
 			self assert: cart isEmpty ]! !
 
 !CartTest methodsFor: 'tests' stamp: 'HernanWilkinson 6/17/2013 18:11'!
@@ -432,12 +432,12 @@ test11CheckoutAnExpiredCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'd 11/30/2018 18:31:29'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 14:07:29'!
 test12CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| aRestInterface usersPasswords cartId |
 	
-	debitBehavior := [ :anAmount :aCreditCard | self error: InternalRestInterface mensajeDeErrorTarjetaSinFondos ].
+	debitBehavior := [ :anAmount :aCreditCard | self error: InternalRestInterface mensajeDeErrorTarjetaSinFondos].
 	usersPasswords := Dictionary new.
 	usersPasswords at: 'unCliente' put: 'password'.
 	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
@@ -445,7 +445,7 @@ test12CannotCheckoutWhenTheCreditCardHasNoCredit
 	aRestInterface add: 1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId.
 		
 	self should: 
-		[aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory 		notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.]  
+		[aRestInterface checkoutCart: cartId withCreditCardNumber: 123 withExpirationDate: testObjectsFactory notExpiredCreditCardFormattedString fromOwner: 'unCliente' on: testObjectsFactory today.]  
 	raise: Error
 	withExceptionDo: 
 		[:anError |
@@ -487,6 +487,27 @@ test14CannotAddAnInvalidAmountOfItems
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCantidadInvalida .
 	].! !
 
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 13:59:07'!
+test15CannotCheckoutAnEmptyCart
+
+	| aRestInterface usersPasswords cartId ccn cco cced |
+	
+	usersPasswords := Dictionary new.
+	usersPasswords at: 'unCliente' put: 'password'.
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: usersPasswords andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	cartId := aRestInterface createNewCartFor: 'unCliente' withPassword: 'password'.
+
+	self should: [
+		ccn := 123.
+		cco := 'unCliente'.
+		cced := testObjectsFactory notExpiredCreditCardFormattedString.
+		aRestInterface checkoutCart: cartId withCreditCardNumber: ccn withExpirationDate: cced fromOwner: cco on: testObjectsFactory today.
+	]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoVacio.
+	].! !
+
 
 !InternalRestInterfaceTest methodsFor: 'setup' stamp: 'd 11/30/2018 18:09:14'!
 setUp
@@ -508,26 +529,15 @@ Object subclass: #Cart
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!Cart methodsFor: 'error messages' stamp: 'HernanWilkinson 6/17/2013 17:45'!
-invalidItemErrorMessage
-	
-	^'Item is not in catalog'! !
-
-!Cart methodsFor: 'error messages' stamp: 'HernanWilkinson 6/17/2013 17:45'!
-invalidQuantityErrorMessage
-	
-	^'Invalid number of items'! !
-
-
-!Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 18:06'!
+!Cart methodsFor: 'assertions' stamp: 'ps 12/1/2018 13:07:40'!
 assertIsValidItem: anItem
 
-	(catalog includesKey: anItem) ifFalse: [ self error: self invalidItemErrorMessage ]! !
+	(catalog includesKey: anItem) ifFalse: [ self error: self class invalidItemErrorMessage ]! !
 
-!Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 17:51'!
+!Cart methodsFor: 'assertions' stamp: 'ps 12/1/2018 13:07:57'!
 assertIsValidQuantity: aQuantity
 
-	aQuantity strictlyPositive ifFalse: [ self error: self invalidQuantityErrorMessage ]! !
+	aQuantity strictlyPositive ifFalse: [ self error: self class invalidQuantityErrorMessage ]! !
 
 
 !Cart methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 17:48'!
@@ -589,6 +599,17 @@ acceptingItemsOf: aCatalog
 
 	^self new initializeAcceptingItemsOf: aCatalog ! !
 
+
+!Cart class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:05:40'!
+invalidItemErrorMessage
+	
+	^'Item is not in catalog'! !
+
+!Cart class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:05:22'!
+invalidQuantityErrorMessage
+	
+	^'Invalid number of items'! !
+
 
 !classDefinition: #CartRegistry category: #'TusLibros-Iteracion3'!
 Object subclass: #CartRegistry
@@ -597,10 +618,10 @@ Object subclass: #CartRegistry
 	poolDictionaries: ''
 	category: 'TusLibros-Iteracion3'!
 
-!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:13:53'!
-getCartWithId: aCartId ifAbsent: aBlockClosure
+!CartRegistry methodsFor: 'cart accessing' stamp: 'ps 12/1/2018 13:28:05'!
+getCartWithId: aCartId
 
-	^ carts at: aCartId ifAbsent: [aBlockClosure value]! !
+	^ carts at: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]! !
 
 !CartRegistry methodsFor: 'cart accessing' stamp: 'ps 11/25/2018 12:10:52'!
 registerNewCart: aCart
@@ -623,6 +644,17 @@ getNextId
 
 	nextId := nextId + 1.
 	^ nextId - 1! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CartRegistry class' category: #'TusLibros-Iteracion3'!
+CartRegistry class
+	instanceVariableNames: ''!
+
+!CartRegistry class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:28:19'!
+mensajeDeErrorIdDeCarritoInvalido
+
+	^ 'elIdDeCarritoEsInvalido'! !
 
 
 !classDefinition: #Cashier category: #'TusLibros-Iteracion3'!
@@ -811,28 +843,24 @@ initializeWithCatalog: aCatalog andAuthInfo: aUserPasswordDictionary andRegistry
 	clock := aClock.! !
 
 
-!InternalRestInterface methodsFor: 'services' stamp: 'd 11/30/2018 18:54:11'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 12/1/2018 13:31:20'!
 add: anAmount of: anISBN toCart: aCartId 
 
 	| cart |
-	
-	self checkIsValidQuantity: anAmount .
-	self checkIsValidItem: anISBN.
-	cart := (cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]).
+
+	cart := cartRegistry getCartWithId: aCartId.
 	self checkCartIsStillValid: aCartId.
 	cart add: anAmount of: anISBN.
 	self updateLastUseTimeOf: aCartId.! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'd 11/30/2018 16:35:50'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 12/1/2018 13:51:18'!
 checkoutCart: aCartId withCreditCardNumber: aCreditCardNumber withExpirationDate: aFormattedDate fromOwner: aCreditCardOwner on: aDate
 
 	| cashier salesBook clientPurchases creditCard |
 
 	creditCard := CreditCard expiringOn: (aFormattedDate asMonth) withOwner: aCreditCardOwner withNumber: aCreditCardNumber.
-	self assertCreditCard: creditCard isNotExpiredOn: aDate.
-	cart := cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido].
+	cart := cartRegistry getCartWithId: aCartId.
 	self checkCartIsStillValid: aCartId.
-	self checkCartIsNotEmpty: aCartId.
 	salesBook := OrderedCollection new.
 	cashier := Cashier toCheckout: cart charging: creditCard throught: merchantProcessor on: aDate registeringOn: salesBook.
 	cashier checkOut.
@@ -851,40 +879,21 @@ createNewCartFor: aClient withPassword: aPassword
 	^ cartId
 ! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'd 11/30/2018 15:49:39'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 12/1/2018 13:33:20'!
 listItemsOf: aCartId 
 
 	| cart |
 	
-	cart := (cartRegistry getCartWithId: aCartId ifAbsent: [self error: self class mensajeDeErrorIdDeCarritoInvalido]).
+	cart := cartRegistry getCartWithId: aCartId.
 	self checkCartIsStillValid: aCartId.
 	^ cart content! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 20:52:10'!
+!InternalRestInterface methodsFor: 'services' stamp: 'ps 12/1/2018 14:04:05'!
 listPurchasesBy: aClient withPassword: aPassword
 
-	| items total |
-
 	self validateUser: aClient andPassword: aPassword.
-	items := Bag new.
-	total := 0.
-	(purchasesByClient at: aClient ifAbsent: [OrderedCollection new]) do: [
-		:aSale |
-		items addAll: aSale items.
-		total := total + aSale total.
-	].
-	^ PurchasesSummary withItems: items andTotalAmount: total.! !
+	^ self summarizePurchasesBy: aClient ! !
 
-!InternalRestInterface methodsFor: 'services' stamp: 'ps 11/26/2018 17:29:08'!
-updateLastUseTimeOf: cartId
-
-	cartLastUseTime at: cartId put: clock currentTime.! !
-
-
-!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 14:19:44'!
-assertCreditCard: aCreditCard isNotExpiredOn: aDate
-
-	(aCreditCard isExpiredOn: aDate) ifTrue: [self error: self class mensajeDeErrorTarjetaExpirada]! !
 
 !InternalRestInterface methodsFor: 'private' stamp: 'd 11/30/2018 16:36:47'!
 checkCartIsNotEmpty: aCartId
@@ -911,6 +920,25 @@ registerNewCart: aCart
 
 	^ cartRegistry registerNewCart: aCart! !
 
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 12/1/2018 14:03:15'!
+summarizePurchasesBy: aClient
+
+	| items total |
+
+	items := Bag new.
+	total := 0.
+	(purchasesByClient at: aClient ifAbsent: [OrderedCollection new]) do: [
+		:aSale |
+		items addAll: aSale items.
+		total := total + aSale total.
+	].
+	^ PurchasesSummary withItems: items andTotalAmount: total.! !
+
+!InternalRestInterface methodsFor: 'private' stamp: 'ps 11/26/2018 17:29:08'!
+updateLastUseTimeOf: cartId
+
+	cartLastUseTime at: cartId put: clock currentTime.! !
+
 !InternalRestInterface methodsFor: 'private' stamp: 'ps 11/25/2018 12:27:18'!
 validateUser: aClient andPassword: aPassword
 
@@ -926,45 +954,45 @@ validateUser: aClient andPassword: aPassword
 InternalRestInterface class
 	instanceVariableNames: ''!
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 18:51:57'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 12:58:02'!
 mensajeDeErrorCantidadInvalida
 
-	^ 'laCantidadDeItemsEsInvalida'! !
+	^ Cart invalidQuantityErrorMessage! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/26/2018 17:34:15'!
 mensajeDeErrorCarritoExpirado
 
 	^ 'elCarritoYaExpiro'! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 16:34:08'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:59:43'!
 mensajeDeErrorCarritoVacio
 
-	^ 'elCarritoEstaVacio'! !
+	^ Cashier cartCanNotBeEmptyErrorMessage! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 20:01:01'!
 mensajeDeErrorContraseñaIncorrecta
 
 	^ 'laContraseñaEsIncorrecta'! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 21:06:35'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:30:48'!
 mensajeDeErrorIdDeCarritoInvalido
 
-	^ 'elIdDeCarritoEsInvalido'! !
+	^ CartRegistry mensajeDeErrorIdDeCarritoInvalido! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 18:37:41'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:09:51'!
 mensajeDeErrorItemInvalido
 
-	^ 'elItemNoExisteEnElCatalogo'! !
+	^ Cart invalidItemErrorMessage ! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/25/2018 14:25:46'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:46:31'!
 mensajeDeErrorTarjetaExpirada
 
-	^ 'laTarjetaEstaExpirada'! !
+	^ Cashier canNotChargeAnExpiredCreditCardErrorMessage! !
 
-!InternalRestInterface class methodsFor: 'error messages' stamp: 'd 11/30/2018 18:20:25'!
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 14:08:06'!
 mensajeDeErrorTarjetaSinFondos
 
-	^ 'laTarjetaNoTieneFondos'! !
+	^ Cashier creditCardHasNoCreditErrorMessage! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 11/22/2018 19:56:56'!
 mensajeDeErrorUsuarioInexistente
