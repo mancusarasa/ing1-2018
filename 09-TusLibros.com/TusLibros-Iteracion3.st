@@ -331,7 +331,7 @@ test06CannotListItemsOfAnInvalidCart
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorIdDeCarritoInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 15:58:33'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:27:03'!
 test07CheckoutCartWithExpiredCreditCardShouldFail
 
 	| aRestInterface cartId ccn cco cced |
@@ -349,7 +349,7 @@ test07CheckoutCartWithExpiredCreditCardShouldFail
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaExpirada.
-		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items isEmpty.
+		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
 !InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:00:21'!
@@ -366,7 +366,7 @@ test08CheckoutCartWithValidCreditCardShouldReflectOnTheClientPurchases
 	self assert: (clientPurchases items occurrencesOf: testObjectsFactory itemSellByTheStore) equals: 1.
 ! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:03:01'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:29:25'!
 test09CantAddItemsFromAnExpiredCart
 
 	| aRestInterface cartId clock |
@@ -379,7 +379,7 @@ test09CantAddItemsFromAnExpiredCart
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
-		self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items size equals: 0.
+		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
 !InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:04:11'!
@@ -414,7 +414,7 @@ test11CheckoutAnExpiredCartShouldFail
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoExpirado.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:07:41'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:17'!
 test12CannotCheckoutWhenTheCreditCardHasNoCredit
 
 	| aRestInterface cartId |
@@ -430,7 +430,7 @@ test12CannotCheckoutWhenTheCreditCardHasNoCredit
 	withExceptionDo: 
 		[:anError |
 			self assert: anError messageText equals: InternalRestInterface mensajeDeErrorTarjetaSinFondos.
-			self assert: (aRestInterface listPurchasesBy: 'unCliente' withPassword: 'password') items isEmpty.
+			self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 		].
  	
 ! !
@@ -449,7 +449,7 @@ test13CannotAddItemsThatArentPresentInTheCatalog
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorItemInvalido.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:09:25'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:29:03'!
 test14CannotAddAnInvalidAmountOfItems
 
 	| aRestInterface cartId |
@@ -460,10 +460,10 @@ test14CannotAddAnInvalidAmountOfItems
 	self should: [aRestInterface add: -1 of: (testObjectsFactory itemSellByTheStore) toCart: cartId]
 	raise: Error
 	withExceptionDo: [ :anError |
-		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCantidadInvalida .
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCantidadInvalida.
 	].! !
 
-!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:10:10'!
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:55'!
 test15CannotCheckoutAnEmptyCart
 
 	| aRestInterface cartId ccn cco cced |
@@ -480,6 +480,27 @@ test15CannotCheckoutAnEmptyCart
 	raise: Error
 	withExceptionDo: [ :anError |
 		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorCarritoVacio.
+		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
+	].! !
+
+!InternalRestInterfaceTest methodsFor: 'testing' stamp: 'ps 12/1/2018 16:28:41'!
+test16CannotCheckoutACartWithAnInvalidCreditCardNumber
+
+	| aRestInterface cartId ccn cco cced |
+
+	aRestInterface := InternalRestInterface withCatalog: testObjectsFactory defaultCatalog andAuthInfo: testObjectsFactory defaultAuthInfo andRegistry: (CartRegistry new) through: self withClock: testObjectsFactory createClockOnCurrentTime.
+	cartId := aRestInterface createNewCartFor: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword.
+
+	self should: [
+		ccn := testObjectsFactory invalidCreditCardNumber.
+		cco := testObjectsFactory defaultClient.
+		cced := testObjectsFactory notExpiredCreditCardFormattedString.
+		aRestInterface checkoutCart: cartId withCreditCardNumber: ccn withExpirationDate: cced fromOwner: cco on: testObjectsFactory today.
+	]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText equals: InternalRestInterface mensajeDeErrorNumeroDeTarjetaInvalido.
+		self assert: (aRestInterface listPurchasesBy: testObjectsFactory defaultClient withPassword: testObjectsFactory defaultClientPassword) items isEmpty.
 	].! !
 
 
@@ -740,9 +761,9 @@ initializeExpiringOn: aMonth
 	
 	expiration := aMonth ! !
 
-!CreditCard methodsFor: 'initialization' stamp: 'ps 11/25/2018 19:57:11'!
+!CreditCard methodsFor: 'initialization' stamp: 'ps 12/1/2018 16:20:04'!
 initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
-	
+
 	expiration := aMonth.
 	owner := aCreditCardOwner.
 	number := aCreditCardNumber.! !
@@ -758,10 +779,23 @@ expiringOn: aMonth
 	
 	^self new initializeExpiringOn: aMonth! !
 
-!CreditCard class methodsFor: 'instance creation' stamp: 'ps 11/25/2018 19:56:25'!
+!CreditCard class methodsFor: 'instance creation' stamp: 'ps 12/1/2018 16:20:21'!
 expiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber
 	
-	^self new initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber! !
+	self assertValidNumber: aCreditCardNumber.
+	^ self new initializeExpiringOn: aMonth withOwner: aCreditCardOwner withNumber: aCreditCardNumber! !
+
+
+!CreditCard class methodsFor: 'error messages' stamp: 'ps 12/1/2018 16:21:46'!
+invalidCreditCardNumber
+
+	^ 'invalidCreditCardNumber'! !
+
+
+!CreditCard class methodsFor: 'assertions' stamp: 'ps 12/1/2018 16:21:07'!
+assertValidNumber: aCreditCardNumber
+
+	(aCreditCardNumber size = 16) ifFalse: [self error: self invalidCreditCardNumber].! !
 
 
 !classDefinition: #CustomizableClock category: #'TusLibros-Iteracion3'!
@@ -963,6 +997,11 @@ mensajeDeErrorIdDeCarritoInvalido
 mensajeDeErrorItemInvalido
 
 	^ Cart invalidItemErrorMessage ! !
+
+!InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 16:26:16'!
+mensajeDeErrorNumeroDeTarjetaInvalido
+
+	^ CreditCard invalidCreditCardNumber! !
 
 !InternalRestInterface class methodsFor: 'error messages' stamp: 'ps 12/1/2018 13:46:31'!
 mensajeDeErrorTarjetaExpirada
